@@ -108,7 +108,7 @@
 elBtnNovo.onclick = () => {
     const op = opcoesCombo[elCombo.value];
     // Atualiza o texto do modal com a Aldeia/Sociedade selecionada
-    document.getElementById('modal-info-aldeia').textContent = `Vínculo: ${op.aldeia} - ${op.sociedade}`;
+    document.getElementById('modal-info-aldeia').textContent = `${op.aldeia} - ${op.sociedade}`;
     elModal.classList.replace('hidden', 'flex');
 };
     elModalFechar.onclick = () => elModal.classList.replace('flex', 'hidden');

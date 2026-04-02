@@ -8,8 +8,8 @@
     /* --- CONTROLE DE TAMANHO DE FONTES --- */
     --font-titulo-principal: 1.8rem;    /* Sociedade dos Guelfos */
     --font-subtitulo: 0.75rem;          /* Sistema de Chamada */
-    --font-labels: 11px;                /* Textos pequenos acima dos campos (Encontro, Membros...) */
-    --font-data: 1.3rem;                /* Data do Encontro */
+    --font-labels: 14px;                /* Textos pequenos acima dos campos (Encontro, Membros...) */
+    --font-data: 1rem;                  /* Data do Encontro */
     --font-inputs: 15px;                /* Texto dentro dos seletores e campos de texto */
     --font-lista-membros: 14px;         /* Nomes na lista de membros */
     --font-botao-submit: 14px;          /* Texto do botão Confirmar Presença */

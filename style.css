@@ -102,5 +102,15 @@ input, select {
 /* MODAL */
 #modal-titulo { font-size: var(--font-modal-titulo) !important; }
 #modal-info-aldeia { font-size: 10px; color: #aaa; margin-bottom: 15px; }
+/* Garante que o aviso fique sobreposto a tudo */
+#modal-aviso {
+    z-index: 100;
+}
+
+/* Estilo para o texto do aviso */
+#aviso-texto {
+    font-family: 'Cinzel', serif !important;
+    font-size: 10px;
+}
 
 .hidden-section { display: none !important; }

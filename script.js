@@ -104,7 +104,13 @@
     elCombo.onchange = carregarMembros;
     elBusca.oninput = renderLista;
     elEmail.oninput = atualizarBotaoSubmit;
-    elBtnNovo.onclick = () => elModal.classList.replace('hidden', 'flex');
+    // Localize onde o elBtnNovo.onclick está definido e atualize:
+elBtnNovo.onclick = () => {
+    const op = opcoesCombo[elCombo.value];
+    // Atualiza o texto do modal com a Aldeia/Sociedade selecionada
+    document.getElementById('modal-info-aldeia').textContent = `Vínculo: ${op.aldeia} - ${op.sociedade}`;
+    elModal.classList.replace('hidden', 'flex');
+};
     elModalFechar.onclick = () => elModal.classList.replace('flex', 'hidden');
 
     elModalCadastrar.onclick = async () => {

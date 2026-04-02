@@ -1,0 +1,214 @@
+<style>
+  :root {
+    --cor-primaria: #D4AF37;         /* Dourado principal */
+    --cor-primaria-brilho: #e8c547;  /* Tom mais claro para hover */
+    --cor-primaria-sombra: #a68620;  /* Tom mais escuro */
+    --cor-fundo-card: rgba(12, 10, 8, 0.75);
+    --cor-borda-vidro: rgba(212, 175, 55, 0.35);
+  }
+
+  /* RESET E FONTES */
+  * {
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    background-color: #0a0908;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* Aplica Cinzel em Títulos e Botões */
+  h1, h2, .font-serif, .btn-submit-guelfo, #btn-novo-membro, label {
+    font-family: 'Cinzel', serif !important;
+  }
+
+  /* Aplica Inter em Inputs e Listas para melhor leitura no mobile */
+  input, select, #lista-membros li, p, .font-sans {
+    font-family: 'Inter', sans-serif !important;
+  }
+
+  
+  /* COR DA DATA DO ENCONTRO */
+  #data-display {
+    color: #FFFFFF !important; /* Altere aqui para a cor que desejar */
+    font-size: 1.1rem !important;
+  }
+
+  /* TÍTULO EM LINHA ÚNICA */
+  .header-title {
+    white-space: nowrap; /* Impede a quebra de linha */
+    font-size: clamp(1rem, 5vw, 1.5rem); /* Ajusta o tamanho da fonte conforme a tela */
+  }
+
+  /* RESPONSIVIDADE GLOBAL */
+  .page-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 1rem;
+    min-height: 100vh;
+    width: 100%;
+    /* O backgroundUrl será aplicado via atributo style no index.html */
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+  }
+
+  .main-container {
+    width: 100%;
+    max-width: 450px; /* Largura máxima para navegadores desktop */
+    margin: 0 auto;
+  }
+
+  /* Ajustes para telas muito pequenas */
+  @media (max-width: 380px) {
+    .header-title {
+      font-size: 0.9rem;
+    }
+    .card-glass {
+      padding: 1rem !important;
+    }
+  }
+
+  /* PLANO DE FUNDO DINÂMICO */
+  .page-wrap {
+    <? if (typeof backgroundUrl !== 'undefined' && backgroundUrl) { ?>
+      background-image: linear-gradient(180deg, rgba(8, 8, 10, 0.85) 0%, rgba(12, 10, 8, 0.9) 100%),
+        url('<?!= backgroundUrl ?>');
+    <? } else { ?>
+      background-image: radial-gradient(ellipse 100% 70% at 50% -10%, rgba(212, 175, 55, 0.1), transparent),
+        linear-gradient(165deg, #0a0908 0%, #151210 40%, #080706 100%);
+    <? } ?>
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+  }
+
+  /* CARDS GERAIS */
+  .card-glass {
+    background: var(--cor-fundo-card);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid var(--cor-borda-vidro) !important;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
+  }
+
+  /* DESTAQUE DA DATA */
+  #data-display {
+    color: var(--cor-primaria) !important;
+    font-size: 1.2rem !important;
+    font-weight: 700 !important;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  /* LABELS E LEGENDAS */
+  label, .text-gold {
+    color: var(--cor-primaria) !important;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+  }
+
+  /* FORMULÁRIOS (INPUTS E SELECTS) */
+  input[type="text"], 
+  input[type="email"], 
+  input[type="search"],
+  select {
+    background-color: rgba(0, 0, 0, 0.5) !important;
+    border: 1px solid rgba(212, 175, 55, 0.25) !important;
+    color: #ffffff !important;
+    transition: all 0.2s ease;
+  }
+
+  input:focus, select:focus {
+    border-color: var(--cor-primaria) !important;
+    box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.15) !important;
+    outline: none;
+  }
+
+  /* Estilo das opções do Select */
+  select option {
+    background-color: #1a1814 !important;
+    color: #ffffff !important;
+  }
+
+  /* BOTÕES */
+  #btn-novo-membro {
+    background-color: var(--cor-primaria) !important;
+    color: #000000 !important;
+    border: none !important;
+    transition: transform 0.1s active;
+  }
+
+  .btn-submit-guelfo {
+    background: linear-gradient(180deg, #e8c547 0%, #c9a227 45%, #a68620 100%) !important;
+    color: #000000 !important;
+    border: none !important;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+    transition: all 0.2s ease;
+  }
+
+  .btn-submit-guelfo:hover:not(:disabled) {
+    filter: brightness(1.1);
+    transform: translateY(-1px);
+  }
+
+  .btn-submit-guelfo:disabled {
+    filter: grayscale(0.8);
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  /* LISTA DE MEMBROS */
+  #lista-membros li {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    transition: background 0.2s;
+  }
+
+  #lista-membros li:last-child {
+    border-bottom: none;
+  }
+
+  #lista-membros li[aria-selected='true'] {
+    background: rgba(212, 175, 55, 0.15) !important;
+    border-left: 4px solid var(--cor-primaria) !important;
+  }
+
+  /* SCROLLBAR PERSONALIZADA */
+  #lista-membros-wrap::-webkit-scrollbar {
+    width: 5px;
+  }
+  #lista-membros-wrap::-webkit-scrollbar-track {
+    background: rgba(0,0,0,0.2);
+  }
+  #lista-membros-wrap::-webkit-scrollbar-thumb {
+    background: var(--cor-primaria-sombra);
+    border-radius: 10px;
+  }
+
+  /* CONTROLE DE EXIBIÇÃO */
+  .hidden-section {
+    display: none !important;
+  }
+
+  /* MENSAGENS DE STATUS */
+  #msg-global {
+    border-width: 1px;
+    margin-top: 1rem;
+    animation: fadeIn 0.3s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* BADGE */
+  #badge-membros {
+    background-color: #065f46 !important;
+    min-width: 24px;
+    text-align: center;
+  }
+</style>

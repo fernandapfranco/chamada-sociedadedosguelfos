@@ -53,7 +53,7 @@
 
                 <div class="card-glass rounded-2xl border p-4 shadow-card sm:p-5">
                     <div class="flex gap-4">
-                        <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-white/20 bg-black/40 text-gold">
+                        <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-amber-600/40 bg-black/40 text-gold">
                             <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
                                 <rect x="3" y="4" width="18" height="18" rx="2" />
                                 <path d="M16 2v4M8 2v4M3 10h18" />
@@ -70,7 +70,7 @@
 
                 <div class="card-glass rounded-2xl border p-4 shadow-card sm:p-5">
                     <div class="flex gap-4">
-                        <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-amber-white/20 bg-black/40 text-gold">
+                        <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-amber-600/40 bg-black/40 text-gold">
                             <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
                                 <path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1h-5v-6H9v6H4a1 1 0 01-1-1V9.5z" />
                             </svg>
@@ -80,7 +80,7 @@
                                 Aldeia / Sociedade
                             </label>
                             <div class="relative mt-2">
-                                <select id="combo-aldeia-sociedade" class="w-full cursor-pointer appearance-none rounded-xl border border-amber-white/20 bg-black/50 py-3 pl-3 pr-10 text-sm text-white focus:border-gold focus:outline-none">
+                                <select id="combo-aldeia-sociedade" class="w-full cursor-pointer appearance-none rounded-xl border border-amber-600/50 bg-black/50 py-3 pl-3 pr-10 text-sm text-white focus:border-gold focus:outline-none">
                                     <option value="">Selecione a sociedade…</option>
                                 </select>
                                 <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-gold/80">
@@ -95,7 +95,7 @@
 
                 <div id="card-membros" class="card-glass hidden-section rounded-2xl border p-4 shadow-card sm:p-5 transition-all duration-300">
                     <div class="flex gap-4 mb-4">
-                        <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-amber-white/20 bg-black/40 text-gold">
+                        <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-amber-600/40 bg-black/40 text-gold">
                             <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
                                 <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
                                 <circle cx="9" cy="7" r="4" />
@@ -124,7 +124,7 @@
 
                 <div class="card-glass rounded-2xl border p-4 shadow-card sm:p-5">
                     <div class="flex gap-4">
-                        <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-amber-white/20 bg-black/40 text-gold">
+                        <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-amber-600/40 bg-black/40 text-gold">
                             <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
                                 <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
                                 <polyline points="22,6 12,13 2,6" />
@@ -132,7 +132,7 @@
                         </div>
                         <div class="min-w-0 flex-1">
                             <label for="email" class="font-label-custom font-semibold uppercase tracking-widest text-gold">E-mail para confirmação</label>
-                            <input type="email" id="email" class="mt-2 w-full rounded-xl border border-amber-white/20 bg-black/50 px-4 py-3 text-sm text-white focus:border-gold outline-none" placeholder="seu@email.com" required />
+                            <input type="email" id="email" class="mt-2 w-full rounded-xl border border-amber-600/40 bg-black/50 px-4 py-3 text-sm text-white focus:border-gold outline-none" placeholder="seu@email.com" required />
                         </div>
                     </div>
                 </div>
@@ -147,11 +147,11 @@
     </div>
 
     <div id="modal-novo" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 p-4 backdrop-blur-sm">
-        <div class="card-glass w-full max-w-sm rounded-2xl border border-gray/50 p-6 text-center">
+        <div class="card-glass w-full max-w-sm rounded-2xl border border-gold/30 p-6 text-center">
             <h2 id="modal-titulo" class="font-serif text-gold uppercase text-lg">Novo Membro</h2>
             <p id="modal-info-aldeia" class="text-[10px] uppercase tracking-widest mb-4 text-gray-400">Carregando...</p>
             
-            <input type="text" id="modal-nome" class="mb-4 w-full rounded-xl border border-gray/50 bg-black/60 p-3 text-white focus:border-gold outline-none text-center uppercase" placeholder="NOME COMPLETO" />
+            <input type="text" id="modal-nome" class="mb-4 w-full rounded-xl border border-gold/40 bg-black/60 p-3 text-white focus:border-gold outline-none text-center uppercase" placeholder="NOME COMPLETO" />
             
             <div class="flex gap-2">
                 <button type="button" id="modal-novo-fechar" class="flex-1 rounded-xl border border-white/20 py-3 text-xs text-white uppercase">Cancelar</button>

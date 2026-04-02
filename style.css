@@ -1,5 +1,6 @@
 :root {
     --cor-primaria: #D4AF37;
+    --cor-primaria-brilho: #f7e08a; /* Cor para a data */
     --cor-fundo-card: rgba(12, 10, 8, 0.85);
     --cor-borda-vidro: rgba(212, 175, 55, 0.3);
 }
@@ -9,28 +10,25 @@
     -webkit-tap-highlight-color: transparent;
 }
 
+/* 1. FONTE CINZEL COMO DEFAULT EM TUDO */
 body {
     background-color: #0a0908;
     margin: 0;
-}
-
-h1, h2, .font-serif, .btn-submit-guelfo, #btn-novo-membro, label {
     font-family: 'Cinzel', serif !important;
 }
 
-/* PLANO DE FUNDO VIA ASSETS */
+/* Ajuste para garantir que inputs e listas também sigam o padrão */
+input, select, button, p, span, li {
+    font-family: 'Cinzel', serif !important;
+}
+
 .page-wrap {
-    /* Gradiente para garantir legibilidade do texto + Imagem da pasta assets */
     background-image: linear-gradient(180deg, rgba(8, 8, 10, 0.85) 0%, rgba(12, 10, 8, 0.95) 100%),
-                      url('./assets/medieval-bg.jpg'); /* <--- AJUSTE O NOME DO ARQUIVO AQUI */
+                      url('./assets/medieval-bg.jpg'); 
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
     min-height: 100vh;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
 }
 
 .card-glass {
@@ -40,19 +38,29 @@ h1, h2, .font-serif, .btn-submit-guelfo, #btn-novo-membro, label {
     border: 1px solid var(--cor-borda-vidro) !important;
 }
 
+/* 2. MUDAR COR DA DATA E TAMANHO */
 #data-display {
-    color: var(--cor-primaria) !important;
+    color: var(--cor-primaria-brilho) !important; /* Cor customizada da data */
     text-transform: uppercase;
     font-weight: 700;
+    font-size: 1.3rem !important; /* Aumentei o tamanho da data */
+}
+
+/* 3. AUMENTAR TAMANHO DAS FONTES DAS SESSÕES (LABELS) */
+label, .text-gold, .font-serif {
+    color: var(--cor-primaria) !important;
+    font-size: 12px !important; /* Aumente aqui para 14px ou 16px se quiser maior */
+    letter-spacing: 0.1em;
 }
 
 .header-title {
     white-space: nowrap;
-    font-size: clamp(1.1rem, 5vw, 1.6rem);
+    font-size: clamp(1.1rem, 5vw, 1.8rem);
 }
 
 .btn-submit-guelfo {
     background: linear-gradient(180deg, #e8c547 0%, #c9a227 100%) !important;
+    font-size: 1.1rem !important; /* Fonte do botão maior */
     transition: all 0.2s;
 }
 

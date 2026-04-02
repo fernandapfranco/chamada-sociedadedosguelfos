@@ -124,49 +124,51 @@ elBtnNovo.onclick = () => {
     elModalFechar.onclick = () => elModal.classList.replace('flex', 'hidden');
 
 elModalCadastrar.onclick = async () => {
-    const nomeOriginal = elModalNome.value.trim();
-    const op = opcoesCombo[elCombo.value];
+        const nomeOriginal = elModalNome.value.trim();
+        const op = opcoesCombo[elCombo.value];
 
-    if (nomeOriginal.length < 3) {
-        mostrarAviso("O nome inserido é muito curto.");
-        return;
-    }
+        if (nomeOriginal.length < 3) {
+            mostrarAviso("O nome inserido é muito curto.");
+            return;
+        }
 
-    const normalizar = (txt) => txt.toLowerCase()
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "")
-        .trim();
+        const normalizar = (txt) => txt.toLowerCase()
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .trim();
 
-    const nomeParaComparar = normalizar(nomeOriginal);
+        const nomeNovo = normalizar(nomeOriginal);
 
-    // Validação de Duplicidade
-    const jaExiste = membrosLista.some(membroExistente => 
-        normalizar(membroExistente) === nomeParaComparar
-    );
+        // VALIDAÇÃO POR SOBRENOME / NOME PARCIAL
+        const jaExiste = membrosLista.some(membroExistente => {
+            const nomeExistente = normalizar(membroExistente);
+            
+            // Verifica se um nome contém o outro (ex: "Fernanda Franco" está em "Fernanda Pedrotti Franco")
+            return nomeExistente.includes(nomeNovo) || nomeNovo.includes(nomeExistente);
+        });
 
-    if (jaExiste) {
-        // AQUI ESTÁ A MUDANÇA: Usando o modal customizado centralizado
-        mostrarAviso(`${nomeOriginal} já faz parte desta Sociedade.`);
-        return;
-    }
+        if (jaExiste) {
+            mostrarAviso(`Já existe um cadastro similar: "${nomeOriginal}". Verifique se este membro já possui registro.`);
+            return;
+        }
 
-    // Segue o processo de cadastro...
-    elModalCadastrar.disabled = true;
-    const res = await chamarGoogle({ 
-        action: 'addMember', 
-        nome: nomeOriginal, 
-        aldeia: op.aldeia, 
-        sociedade: op.sociedade 
-    });
+        // Segue o processo de cadastro...
+        elModalCadastrar.disabled = true;
+        const res = await chamarGoogle({ 
+            action: 'addMember', 
+            nome: nomeOriginal, 
+            aldeia: op.aldeia, 
+            sociedade: op.sociedade 
+        });
 
-    if (res.ok) {
-        elModal.classList.replace('flex', 'hidden');
-        elModalNome.value = '';
-        nomeSelecionado = nomeOriginal;
-        carregarMembros();
-    }
-    elModalCadastrar.disabled = false;
-};
+        if (res.ok) {
+            elModal.classList.replace('flex', 'hidden');
+            elModalNome.value = '';
+            nomeSelecionado = nomeOriginal;
+            carregarMembros();
+        }
+        elModalCadastrar.disabled = false;
+    };
     elForm.onsubmit = async (e) => {
         e.preventDefault();
         const op = opcoesCombo[elCombo.value];

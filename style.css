@@ -6,8 +6,8 @@
     --cor-borda-vidro: rgba(212, 175, 55, 0.3);
 
     /* --- CONTROLE DE TAMANHO DE FONTES --- */
-    --font-titulo-principal: 1.8rem;    /* Sociedade dos Guelfos */
-    --font-subtitulo: 0.75rem;          /* Sistema de Chamada */
+    --font-titulo-principal: 24px;    /* Sociedade dos Guelfos */
+    --font-subtitulo: 16px;          /* Sistema de Chamada */
     --font-labels: 14px;                /* Textos pequenos acima dos campos (Encontro, Membros...) */
     --font-data: 1rem;                  /* Data do Encontro */
     --font-inputs: 15px;                /* Texto dentro dos seletores e campos de texto */

@@ -1,171 +1,149 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-  <head>
+<head>
     <meta charset="UTF-8" />
-    <base target="_top" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Chamada — Guelfos</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            fontFamily: {
-              serif: ['Cinzel', 'Georgia', 'serif'],
-              sans: ['Inter', 'system-ui', 'sans-serif'],
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        serif: ['Cinzel', 'Georgia', 'serif'],
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                    colors: {
+                        gold: {
+                            DEFAULT: '#D4AF37',
+                            dim: '#b8922e',
+                            glow: '#e8c547',
+                        },
+                    },
+                    boxShadow: {
+                        card: '0 12px 40px rgba(0,0,0,0.45)',
+                    },
+                },
             },
-            colors: {
-              gold: {
-                DEFAULT: '#D4AF37',
-                dim: '#b8922e',
-                glow: '#e8c547',
-              },
-            },
-            boxShadow: {
-              card: '0 12px 40px rgba(0,0,0,0.45)',
-            },
-          },
-        },
-      };
+        };
     </script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Inter:wght@400;500;600&display=swap"
-      rel="stylesheet"
-    />
-    <?!= include('stylesheet'); ?>
-  </head>
-  <body class="min-h-screen font-sans antialiased text-white">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="min-h-screen font-sans antialiased text-white">
     <div class="page-wrap flex min-h-screen flex-col items-center justify-start p-4 pb-10 sm:justify-center sm:p-6">
-      
-      <div class="w-full max-w-md space-y-4" role="main">
         
-        <header class="px-2 text-center pt-4 sm:pt-0">
-          <div class="flex items-center justify-center gap-3">
-            <svg class="h-7 w-7 shrink-0 text-gold sm:h-9 sm:w-9" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.25" d="M12 3l8 4v6c0 5-3.5 9-8 10-4.5-1-8-5-8-10V7l8-4z" />
-            </svg>
-            <h1 class="font-serif text-base font-semibold uppercase tracking-[0.1em] text-gold sm:text-xl md:text-2xl">
-              Sociedade dos Guelfos
-            </h1>
-            <svg class="h-7 w-7 shrink-0 text-gold sm:h-9 sm:w-9" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.25" d="M12 3l8 4v6c0 5-3.5 9-8 10-4.5-1-8-5-8-10V7l8-4z" />
-            </svg>
-          </div>
-          <p class="mt-2 font-sans text-[9px] font-medium uppercase tracking-[0.2em] text-gray-400 sm:text-xs">
-            Sistema de chamada
-          </p>
-        </header>
-
-        <form id="form-chamada" class="space-y-4" novalidate>
-          <input type="hidden" id="data" name="data" value="" />
-
-          <div class="card-glass rounded-2xl border p-4 shadow-card sm:p-5">
-            <div class="flex gap-4">
-              <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-amber-600/40 bg-black/40 text-gold">
-                <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                  <rect x="3" y="4" width="18" height="18" rx="2" />
-                  <path d="M16 2v4M8 2v4M3 10h18" />
-                </svg>
-              </div>
-              <div class="min-w-0 flex-1">
-                <p class="text-[10px] font-semibold uppercase tracking-widest text-gold">Encontro</p>
-                <p id="data-display" class="mt-1 font-sans text-base font-semibold leading-snug text-white sm:text-lg">
-                  Carregando data...
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div class="card-glass rounded-2xl border p-4 shadow-card sm:p-5">
-            <div class="flex gap-4">
-              <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-amber-600/40 bg-black/40 text-gold">
-                <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                  <path d="M12 21s-8-4.5-8-11a8 8 0 1116 0c0 6.5-8 11-8 11z" />
-                  <circle cx="12" cy="10" r="2.5" />
-                </svg>
-              </div>
-              <div class="min-w-0 flex-1">
-                <label for="combo-aldeia-sociedade" class="text-[10px] font-semibold uppercase tracking-widest text-gold">
-                  Aldeia / Sociedade
-                </label>
-                <div class="relative mt-2">
-                  <select
-                    id="combo-aldeia-sociedade"
-                    class="w-full cursor-pointer appearance-none rounded-xl border border-amber-600/50 bg-black/50 py-3 pl-3 pr-10 text-sm text-white focus:border-gold focus:outline-none focus:ring-2 focus:ring-amber-500/30"
-                  >
-                    <option value="">Selecione a sociedade…</option>
-                  </select>
-                  <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-gold/80">
-                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                    </svg>
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div id="card-membros" class="card-glass hidden-section rounded-2xl border p-4 shadow-card sm:p-5 transition-all duration-300">
-            <div class="mb-3 flex items-center justify-between gap-2">
-              <div class="flex items-center gap-2">
-                <span class="font-serif text-xs font-semibold uppercase tracking-widest text-gold">Membros</span>
-                <span id="badge-membros" class="rounded-full bg-emerald-600/90 px-2 py-0.5 text-[10px] font-semibold text-white">0</span>
-              </div>
-              <button type="button" id="btn-novo-membro" class="rounded-lg bg-gold px-3 py-1.5 text-xs font-bold text-black hover:bg-gold-glow transition-colors">
-                + Novo
-              </button>
-            </div>
+        <div class="w-full max-w-md space-y-4" role="main">
             
-            <div class="relative mb-3">
-              <input
-                type="search"
-                id="busca-membro"
-                class="w-full rounded-xl border border-white/10 bg-black/45 py-2.5 pl-4 pr-3 text-sm text-white placeholder:text-gray-500 focus:border-gold focus:outline-none"
-                placeholder="Buscar membro…"
-              />
-            </div>
+            <header class="px-2 text-center pt-4 sm:pt-0">
+                <div class="flex items-center justify-center gap-3">
+                    <svg class="h-7 w-7 shrink-0 text-gold sm:h-9 sm:w-9" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.25" d="M12 3l8 4v6c0 5-3.5 9-8 10-4.5-1-8-5-8-10V7l8-4z" />
+                    </svg>
+                    <h1 class="header-title font-serif text-base font-semibold uppercase tracking-[0.1em] text-gold sm:text-xl md:text-2xl">
+                        Sociedade dos Guelfos
+                    </h1>
+                    <svg class="h-7 w-7 shrink-0 text-gold sm:h-9 sm:w-9" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.25" d="M12 3l8 4v6c0 5-3.5 9-8 10-4.5-1-8-5-8-10V7l8-4z" />
+                    </svg>
+                </div>
+                <p class="mt-2 font-sans text-[9px] font-medium uppercase tracking-[0.2em] text-gray-400 sm:text-xs">
+                    Sistema de chamada
+                </p>
+            </header>
 
-            <div id="lista-membros-wrap" class="max-h-60 overflow-y-auto rounded-xl border border-white/5 bg-black/30">
-              <ul id="lista-membros" class="divide-y divide-white/5"></ul>
-              <p id="lista-membros-vazia" class="hidden px-4 py-6 text-center text-sm text-gray-500">Nenhum membro encontrado.</p>
-            </div>
-          </div>
+            <form id="form-chamada" class="space-y-4" novalidate>
+                <input type="hidden" id="data" name="data" value="" />
 
-          <div class="card-glass rounded-2xl border p-4 shadow-card sm:p-5">
-            <label for="email" class="text-[10px] font-semibold uppercase tracking-widest text-gold">E-mail para confirmação</label>
-            <input
-              type="email"
-              id="email"
-              class="mt-2 w-full rounded-xl border border-amber-600/40 bg-black/50 px-4 py-3 text-sm text-white focus:border-gold focus:outline-none"
-              placeholder="seu@email.com"
-              required
-            />
-          </div>
+                <div class="card-glass rounded-2xl border p-4 shadow-card sm:p-5">
+                    <div class="flex gap-4">
+                        <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-amber-600/40 bg-black/40 text-gold">
+                            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <rect x="3" y="4" width="18" height="18" rx="2" />
+                                <path d="M16 2v4M8 2v4M3 10h18" />
+                            </svg>
+                        </div>
+                        <div class="min-w-0 flex-1">
+                            <p class="text-[10px] font-semibold uppercase tracking-widest text-gold">Encontro</p>
+                            <p id="data-display" class="mt-1 font-sans text-base font-semibold leading-snug text-white sm:text-lg">
+                                Carregando data...
+                            </p>
+                        </div>
+                    </div>
+                </div>
 
-          <p id="msg-global" class="hidden rounded-2xl border px-4 py-3 text-sm font-sans"></p>
+                <div class="card-glass rounded-2xl border p-4 shadow-card sm:p-5">
+                    <div class="flex gap-4">
+                        <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-amber-600/40 bg-black/40 text-gold">
+                            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <path d="M12 21s-8-4.5-8-11a8 8 0 1116 0c0 6.5-8 11-8 11z" />
+                                <circle cx="12" cy="10" r="2.5" />
+                            </svg>
+                        </div>
+                        <div class="min-w-0 flex-1">
+                            <label for="combo-aldeia-sociedade" class="text-[10px] font-semibold uppercase tracking-widest text-gold">
+                                Aldeia / Sociedade
+                            </label>
+                            <div class="relative mt-2">
+                                <select id="combo-aldeia-sociedade" class="w-full cursor-pointer appearance-none rounded-xl border border-amber-600/50 bg-black/50 py-3 pl-3 pr-10 text-sm text-white focus:border-gold focus:outline-none">
+                                    <option value="">Selecione a sociedade…</option>
+                                </select>
+                                <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-gold/80">
+                                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-          <button
-            type="submit"
-            id="btn-submit"
-            class="btn-submit-guelfo flex w-full items-center justify-center gap-2 rounded-2xl py-4 font-serif text-sm font-bold uppercase tracking-widest text-black shadow-lg disabled:opacity-50"
-          >
-            <span id="btn-label">Confirmar presença</span>
-          </button>
-        </form>
-      </div>
+                <div id="card-membros" class="card-glass hidden-section rounded-2xl border p-4 shadow-card sm:p-5 transition-all duration-300">
+                    <div class="mb-3 flex items-center justify-between gap-2">
+                        <div class="flex items-center gap-2">
+                            <span class="font-serif text-xs font-semibold uppercase tracking-widest text-gold">Membros</span>
+                            <span id="badge-membros" class="rounded-full bg-emerald-600/90 px-2 py-0.5 text-[10px] font-semibold text-white">0</span>
+                        </div>
+                        <button type="button" id="btn-novo-membro" class="rounded-lg bg-gold px-3 py-1.5 text-xs font-bold text-black hover:bg-gold-glow">
+                            + Novo
+                        </button>
+                    </div>
+                    <div class="relative mb-3">
+                        <input type="search" id="busca-membro" class="w-full rounded-xl border border-white/10 bg-black/45 py-2.5 pl-4 pr-3 text-sm text-white placeholder:text-gray-500 outline-none focus:border-gold" placeholder="Buscar membro…" />
+                    </div>
+                    <div id="lista-membros-wrap" class="max-h-60 overflow-y-auto rounded-xl border border-white/5 bg-black/30">
+                        <ul id="lista-membros" class="divide-y divide-white/5"></ul>
+                        <p id="lista-membros-vazia" class="hidden px-4 py-6 text-center text-sm text-gray-500">Nenhum membro encontrado.</p>
+                    </div>
+                </div>
+
+                <div class="card-glass rounded-2xl border p-4 shadow-card sm:p-5">
+                    <label for="email" class="text-[10px] font-semibold uppercase tracking-widest text-gold">E-mail para confirmação</label>
+                    <input type="email" id="email" class="mt-2 w-full rounded-xl border border-amber-600/40 bg-black/50 px-4 py-3 text-sm text-white focus:border-gold outline-none" placeholder="seu@email.com" required />
+                </div>
+
+                <p id="msg-global" class="hidden rounded-2xl border px-4 py-3 text-sm font-sans"></p>
+
+                <button type="submit" id="btn-submit" class="btn-submit-guelfo flex w-full items-center justify-center gap-2 rounded-2xl py-4 font-serif text-sm font-bold uppercase tracking-widest text-black shadow-lg disabled:opacity-50">
+                    <span id="btn-label">Confirmar presença</span>
+                </button>
+            </form>
+        </div>
     </div>
 
     <div id="modal-novo" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 p-4 backdrop-blur-sm">
-      <div class="card-glass w-full max-w-sm rounded-2xl border border-gold/30 p-6">
-        <h2 class="mb-4 font-serif text-lg text-gold uppercase">Novo membro</h2>
-        <input type="text" id="modal-nome" class="mb-4 w-full rounded-xl border border-gold/40 bg-black/60 p-3 text-white focus:border-gold outline-none" placeholder="Nome completo" />
-        <div class="flex gap-2">
-           <button type="button" id="modal-novo-fechar" class="flex-1 rounded-xl border border-white/20 py-3 text-sm">Cancelar</button>
-           <button type="button" id="modal-btn-cadastrar" class="flex-1 rounded-xl bg-gold py-3 text-sm font-bold text-black">Salvar</button>
+        <div class="card-glass w-full max-w-sm rounded-2xl border border-gold/30 p-6">
+            <h2 class="mb-4 font-serif text-lg text-gold uppercase">Novo membro</h2>
+            <input type="text" id="modal-nome" class="mb-4 w-full rounded-xl border border-gold/40 bg-black/60 p-3 text-white focus:border-gold outline-none" placeholder="Nome completo" />
+            <div class="flex gap-2">
+                <button type="button" id="modal-novo-fechar" class="flex-1 rounded-xl border border-white/20 py-3 text-sm text-white">Cancelar</button>
+                <button type="button" id="modal-btn-cadastrar" class="flex-1 rounded-xl bg-gold py-3 text-sm font-bold text-black">Salvar</button>
+            </div>
         </div>
-      </div>
     </div>
 
-    <?!= include('javascript'); ?>
-  </body>
+    <script src="script.js"></script>
+</body>
 </html>

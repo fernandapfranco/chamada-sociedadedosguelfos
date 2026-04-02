@@ -1,6 +1,6 @@
 :root {
     --cor-primaria: #D4AF37;
-    --cor-primaria-brilho: #f7e08a; /* Cor para a data */
+    --cor-primaria-brilho: #FFFFFF; /* Cor para a data */
     --cor-fundo-card: rgba(12, 10, 8, 0.85);
     --cor-borda-vidro: rgba(212, 175, 55, 0.3);
 }

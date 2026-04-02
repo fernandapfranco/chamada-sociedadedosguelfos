@@ -6,21 +6,21 @@
     --cor-borda-vidro: rgba(212, 175, 55, 0.3);
 
     /* --- CONTROLE DE TAMANHO DE FONTES (VALORES BASE) --- */
-    --font-titulo-principal: 1.25rem;    /* Adaptável: ~20px mobile / 24px desktop */
-    --font-subtitulo: 0.9rem;           /* Sistema de Chamada */
+    --font-titulo-principal: 20px;    /* Adaptável: ~20px mobile / 24px desktop */
+    --font-subtitulo: 18px;           /* Sistema de Chamada */
     --font-labels: 12px;                /* Textos pequenos acima dos campos */
-    --font-data: 1rem;                  /* Data do Encontro */
+    --font-data: 16px;                  /* Data do Encontro */
     --font-inputs: 14px;                /* Texto dentro dos campos */
     --font-lista-membros: 14px;
     --font-botao-submit: 14px;
-    --font-modal-titulo: 1.1rem;
+    --font-modal-titulo: 16px;
 }
 
 /* Responsividade de Fontes para telas maiores */
 @media (min-width: 640px) {
     :root {
-        --font-titulo-principal: 1.75rem; 
-        --font-subtitulo: 1.1rem;
+        --font-titulo-principal: 22px; 
+        --font-subtitulo: 20px;
         --font-labels: 14px;
         --font-inputs: 15px;
     }

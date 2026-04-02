@@ -2,8 +2,8 @@
     /* CORES */
     --cor-primaria: #D4AF37;
     --cor-primaria-brilho: #FFFFFF;
-    --cor-fundo-card: rgba(12, 10, 8, 0.85);
-    --cor-borda-vidro: #C9A227;  /*rgba(212, 175, 55, 0.3);*/
+    --cor-fundo-card: #C9A227; /*rgba(12, 10, 8, 0.85);*/
+    --cor-borda-vidro:rgba(212, 175, 55, 0.3);
 
     /* --- CONTROLE DE TAMANHO DE FONTES (VALORES BASE) --- */
     --font-titulo-principal: 20px;    /* Adaptável: ~20px mobile / 24px desktop */

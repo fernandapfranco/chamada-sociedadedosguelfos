@@ -1,8 +1,19 @@
 :root {
+    /* CORES */
     --cor-primaria: #D4AF37;
-    --cor-primaria-brilho: #FFFFFF; /* Cor para a data */
+    --cor-primaria-brilho: #f7e08a;
     --cor-fundo-card: rgba(12, 10, 8, 0.85);
     --cor-borda-vidro: rgba(212, 175, 55, 0.3);
+
+    /* --- CONTROLE DE TAMANHO DE FONTES --- */
+    --font-titulo-principal: 1.8rem;    /* Sociedade dos Guelfos */
+    --font-subtitulo: 0.75rem;          /* Sistema de Chamada */
+    --font-labels: 11px;                /* Textos pequenos acima dos campos (Encontro, Membros...) */
+    --font-data: 1.3rem;                /* Data do Encontro */
+    --font-inputs: 15px;                /* Texto dentro dos seletores e campos de texto */
+    --font-lista-membros: 14px;         /* Nomes na lista de membros */
+    --font-botao-submit: 14px;          /* Texto do botão Confirmar Presença */
+    --font-modal-titulo: 1.1rem;        /* Título do Modal Novo Membro */
 }
 
 * {
@@ -10,27 +21,37 @@
     -webkit-tap-highlight-color: transparent;
 }
 
-/* 1. FONTE CINZEL COMO DEFAULT EM TUDO */
 body {
     background-color: #0a0908;
     margin: 0;
     font-family: 'Cinzel', serif !important;
 }
 
-/* Ajuste para garantir que inputs e listas também sigam o padrão */
-input, select, button, p, span, li {
+input, select, button, p, span, li, h1, h2, label {
     font-family: 'Cinzel', serif !important;
 }
 
 .page-wrap {
     background-image: linear-gradient(180deg, rgba(8, 8, 10, 0.85) 0%, rgba(12, 10, 8, 0.95) 100%),
-                      url('./assets/medieval-bg.jpg'); 
+                      url('./assets/image_f04eab.png'); 
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
     min-height: 100vh;
 }
 
+/* TÍTULOS */
+.header-title {
+    font-size: var(--font-titulo-principal) !important;
+    white-space: nowrap;
+}
+
+.header-subtitle {
+    font-size: var(--font-subtitulo) !important;
+    letter-spacing: 0.2em;
+}
+
+/* CARDS */
 .card-glass {
     background: var(--cor-fundo-card);
     backdrop-filter: blur(12px);
@@ -38,29 +59,38 @@ input, select, button, p, span, li {
     border: 1px solid var(--cor-borda-vidro) !important;
 }
 
-/* 2. MUDAR COR DA DATA E TAMANHO */
+/* DATA */
 #data-display {
-    color: var(--cor-primaria-brilho) !important; /* Cor customizada da data */
-    text-transform: uppercase;
+    color: var(--cor-primaria-brilho) !important;
     font-weight: 700;
-    font-size: 1.3rem !important; /* Aumentei o tamanho da data */
+    font-size: var(--font-data) !important;
 }
 
-/* 3. AUMENTAR TAMANHO DAS FONTES DAS SESSÕES (LABELS) */
-label, .text-gold, .font-serif {
+/* LABELS DAS SEÇÕES */
+label, .label-secao {
     color: var(--cor-primaria) !important;
-    font-size: 12px !important; /* Aumente aqui para 14px ou 16px se quiser maior */
+    font-size: var(--font-labels) !important;
     letter-spacing: 0.1em;
+    text-transform: uppercase;
 }
 
-.header-title {
-    white-space: nowrap;
-    font-size: clamp(1.1rem, 5vw, 1.8rem);
+/* INPUTS E SELECTS */
+input, select {
+    font-size: var(--font-inputs) !important;
 }
 
+/* LISTA DE MEMBROS */
+#lista-membros li span {
+    font-size: var(--font-lista-membros) !important;
+}
+
+/* BOTÃO SUBMIT (CORREÇÃO DE VISIBILIDADE) */
 .btn-submit-guelfo {
     background: linear-gradient(180deg, #e8c547 0%, #c9a227 100%) !important;
-    font-size: 1.1rem !important; /* Fonte do botão maior */
+    color: #000000 !important; /* Texto Preto para dar contraste com o dourado */
+    font-size: var(--font-botao-submit) !important;
+    font-weight: 700 !important;
+    text-shadow: none !important; /* Remove sombras que sujam o texto */
     transition: all 0.2s;
 }
 
@@ -69,9 +99,8 @@ label, .text-gold, .font-serif {
     opacity: 0.4;
 }
 
-.hidden-section {
-    display: none !important;
-}
+/* MODAL */
+#modal-titulo { font-size: var(--font-modal-titulo) !important; }
+#modal-info-aldeia { font-size: 10px; color: #aaa; margin-bottom: 15px; }
 
-#lista-membros-wrap::-webkit-scrollbar { width: 4px; }
-#lista-membros-wrap::-webkit-scrollbar-thumb { background: var(--cor-primaria); border-radius: 10px; }
+.hidden-section { display: none !important; }

@@ -1,5 +1,5 @@
 (function () {
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxNwmi9-8Ug5VYLHNbcqsjNWJqwiq05Zk_o3__1QdgL-1DmMrWvedfUF5Wyqa1a86K2/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyighG2PbuNQpLj52R9bf4TNa5pK-lx4g69dUAywHJOtlYFQCGjUYpmsjVSjuwDIwuE/exec";
 
     var aldeiasMap = {};
     var opcoesCombo = [];

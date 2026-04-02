@@ -113,17 +113,48 @@ elBtnNovo.onclick = () => {
 };
     elModalFechar.onclick = () => elModal.classList.replace('flex', 'hidden');
 
-    elModalCadastrar.onclick = async () => {
-        const nome = elModalNome.value.trim();
+elModalCadastrar.onclick = async () => {
+        const nomeOriginal = elModalNome.value.trim();
         const op = opcoesCombo[elCombo.value];
-        if (nome.length < 3) return alert('Nome muito curto');
+
+        // 1. Validação básica de preenchimento
+        if (nomeOriginal.length < 3) return alert('Nome muito curto');
+
+        // 2. FUNÇÃO DE NORMALIZAÇÃO (Ignora acentos e maiúsculas)
+        const normalizar = (txt) => txt.toLowerCase()
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .trim();
+
+        const nomeParaComparar = normalizar(nomeOriginal);
+
+        // 3. VALIDAÇÃO DE DUPLICIDADE
+        // Compara com a lista 'membrosLista' que já foi carregada da planilha
+        const jaExiste = membrosLista.some(membroExistente => 
+            normalizar(membroExistente) === nomeParaComparar
+        );
+
+        if (jaExiste) {
+            alert(`O membro "${nomeOriginal}" já está cadastrado nesta Sociedade/Aldeia!`);
+            return; // Interrompe o processo aqui
+        }
+
+        // 4. SE PASSAR NA VALIDAÇÃO, SEGUE O CADASTRO
         elModalCadastrar.disabled = true;
-        const res = await chamarGoogle({ action: 'addMember', nome, aldeia: op.aldeia, sociedade: op.sociedade });
+        const res = await chamarGoogle({ 
+            action: 'addMember', 
+            nome: nomeOriginal, 
+            aldeia: op.aldeia, 
+            sociedade: op.sociedade 
+        });
+
         if (res.ok) {
             elModal.classList.replace('flex', 'hidden');
             elModalNome.value = '';
-            nomeSelecionado = nome;
-            carregarMembros();
+            nomeSelecionado = nomeOriginal;
+            carregarMembros(); // Recarrega a lista para garantir sincronia
+        } else {
+            alert(res.error || 'Erro ao cadastrar');
         }
         elModalCadastrar.disabled = false;
     };

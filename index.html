@@ -100,24 +100,34 @@
                     </div>
                 </div>
 
-                <div id="card-membros" class="card-glass hidden-section rounded-2xl border p-4 shadow-card sm:p-5 transition-all duration-300">
-                    <div class="mb-3 flex items-center justify-between gap-2">
-                        <div class="flex items-center gap-2">
-                            <span class="font-serif text-xs font-semibold uppercase tracking-widest text-gold">Membros</span>
-                            <span id="badge-membros" class="rounded-full bg-emerald-600/90 px-2 py-0.5 text-[10px] font-semibold text-white">0</span>
-                        </div>
-                        <button type="button" id="btn-novo-membro" class="rounded-lg bg-gold px-3 py-1.5 text-xs font-bold text-black hover:bg-gold-glow">
-                            + Novo
-                        </button>
-                    </div>
-                    <div class="relative mb-3">
-                        <input type="search" id="busca-membro" class="w-full rounded-xl border border-white/10 bg-black/45 py-2.5 pl-4 pr-3 text-sm text-white placeholder:text-gray-500 outline-none focus:border-gold" placeholder="Buscar membro…" />
-                    </div>
-                    <div id="lista-membros-wrap" class="max-h-60 overflow-y-auto rounded-xl border border-white/5 bg-black/30">
-                        <ul id="lista-membros" class="divide-y divide-white/5"></ul>
-                        <p id="lista-membros-vazia" class="hidden px-4 py-6 text-center text-sm text-gray-500">Nenhum membro encontrado.</p>
-                    </div>
+<div id="card-membros" class="card-glass hidden-section rounded-2xl border p-4 shadow-card sm:p-5 transition-all duration-300">
+    <div class="flex gap-4 mb-4">
+        <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-amber-600/40 bg-black/40 text-gold">
+            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
+                <circle cx="9" cy="7" r="4" />
+                <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" />
+            </svg>
+        </div>
+        <div class="flex-1">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <span class="label-secao font-semibold">Membros</span>
+                    <span id="badge-membros" class="rounded-full bg-emerald-600/90 px-2 py-0.5 text-[10px] font-semibold text-white">0</span>
                 </div>
+                <button type="button" id="btn-novo-membro" class="rounded-lg bg-gold px-3 py-1.5 text-[10px] font-bold text-black hover:bg-gold-glow">
+                    + NOVO
+                </button>
+            </div>
+            <input type="search" id="busca-membro" class="mt-2 w-full rounded-xl border border-white/10 bg-black/45 py-2 px-3 text-sm text-white placeholder:text-gray-500 outline-none" placeholder="BUSCAR..." />
+        </div>
+    </div>
+    
+    <div id="lista-membros-wrap" class="max-h-60 overflow-y-auto rounded-xl border border-white/5 bg-black/30">
+        <ul id="lista-membros" class="divide-y divide-white/5"></ul>
+        <p id="lista-membros-vazia" class="hidden px-4 py-6 text-center text-sm text-gray-500 uppercase">Nenhum membro cadastrado.</p>
+    </div>
+</div>
 
                 <div class="card-glass rounded-2xl border p-4 shadow-card sm:p-5">
                     <label for="email" class="text-[10px] font-semibold uppercase tracking-widest text-gold">E-mail para confirmação</label>
@@ -134,15 +144,18 @@
     </div>
 
     <div id="modal-novo" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 p-4 backdrop-blur-sm">
-        <div class="card-glass w-full max-w-sm rounded-2xl border border-gold/30 p-6">
-            <h2 class="mb-4 font-serif text-lg text-gold uppercase">Novo membro</h2>
-            <input type="text" id="modal-nome" class="mb-4 w-full rounded-xl border border-gold/40 bg-black/60 p-3 text-white focus:border-gold outline-none" placeholder="Nome completo" />
-            <div class="flex gap-2">
-                <button type="button" id="modal-novo-fechar" class="flex-1 rounded-xl border border-white/20 py-3 text-sm text-white">Cancelar</button>
-                <button type="button" id="modal-btn-cadastrar" class="flex-1 rounded-xl bg-gold py-3 text-sm font-bold text-black">Salvar</button>
-            </div>
+    <div class="card-glass w-full max-w-sm rounded-2xl border border-gold/30 p-6 text-center">
+        <h2 id="modal-titulo" class="font-serif text-gold uppercase">Novo Membro</h2>
+        <p id="modal-info-aldeia" class="uppercase tracking-widest mb-4">Carregando...</p>
+        
+        <input type="text" id="modal-nome" class="mb-4 w-full rounded-xl border border-gold/40 bg-black/60 p-3 text-white focus:border-gold outline-none text-center uppercase" placeholder="NOME COMPLETO" />
+        
+        <div class="flex gap-2">
+            <button type="button" id="modal-novo-fechar" class="flex-1 rounded-xl border border-white/20 py-3 text-xs text-white uppercase">Cancelar</button>
+            <button type="button" id="modal-btn-cadastrar" class="flex-1 rounded-xl bg-gold py-3 text-xs font-bold text-black uppercase">Salvar</button>
         </div>
     </div>
+</div>
 
     <script src="script.js"></script>
 </body>

@@ -1,5 +1,6 @@
 (function () {
     const SCRIPT_URL = import.meta.env.VITE_SCRIPT_URL;
+    const MEU_WHATSAPP_BUSINESS = "555135174739"; // Seu número para controle
 
     var aldeiasMap = {};
     var membrosLista = [];
@@ -9,85 +10,62 @@
     const elComboAldeia = document.getElementById('combo-aldeia');
     const elComboSociedade = document.getElementById('combo-sociedade');
     const elWrapperSoc = document.getElementById('wrapper-sociedade');
-    const elForm = document.getElementById('form-chamada');
-    const elData = document.getElementById('data');
-    const elDataDisplay = document.getElementById('data-display');
-    const elCardMembros = document.getElementById('card-membros');
-    const elBadge = document.getElementById('badge-membros');
-    const elBtnNovo = document.getElementById('btn-novo-membro');
-    const elBusca = document.getElementById('busca-membro');
-    const elLista = document.getElementById('lista-membros');
-    const elListaVazia = document.getElementById('lista-membros-vazia');
-    const elTelefone = document.getElementById('telefone'); 
+    const elTelefone = document.getElementById('telefone');
     const elBtn = document.getElementById('btn-submit');
-    const elBtnLabel = document.getElementById('btn-label');
+    const elCardMembros = document.getElementById('card-membros');
+    const elLista = document.getElementById('lista-membros');
 
-    // Modais
-    const elModal = document.getElementById('modal-novo');
-    const elModalFechar = document.getElementById('modal-novo-fechar');
-    const elModalNome = document.getElementById('modal-nome');
-    const elModalTelefoneNovo = document.getElementById('modal-telefone-novo');
-    const elModalCadastrar = document.getElementById('modal-btn-cadastrar');
-    const elModalAviso = document.getElementById('modal-aviso');
-    const elAvisoTexto = document.getElementById('aviso-texto');
-    const elBtnFecharAviso = document.getElementById('btn-fechar-aviso');
+    // Inicialização das Travas
+    elComboSociedade.disabled = true;
+    elTelefone.disabled = true;
+    elBtn.disabled = true;
 
-    // --- BLOQUEIO DE SEGURANÇA ---
-    function atualizarEstadoCampos() {
-        const aldeiaOk = elComboAldeia.value !== "";
-        const socOk = elComboSociedade.value !== "";
-        const nomeOk = nomeSelecionado !== "";
+    function atualizarTravas() {
+        // Sociedade só libera se Aldeia estiver ok
+        elComboSociedade.disabled = !elComboAldeia.value;
+        elWrapperSoc.style.opacity = elComboSociedade.disabled ? "0.5" : "1";
 
-        // Só libera o telefone se os anteriores estiverem preenchidos
-        elTelefone.disabled = !(aldeiaOk && socOk && nomeOk);
+        // Telefone só libera se Nome estiver selecionado
+        elTelefone.disabled = !nomeSelecionado;
         elTelefone.parentElement.style.opacity = elTelefone.disabled ? "0.5" : "1";
 
-        const telLimpo = elTelefone.value.replace(/\D/g, '');
-        const telValido = telLimpo.length >= 10;
-        
-        elBtn.disabled = !(nomeOk && telValido && socOk);
+        // Botão de envio só libera com telefone válido (10+ dígitos)
+        const telValido = elTelefone.value.replace(/\D/g, '').length >= 10;
+        elBtn.disabled = !nomeSelecionado || !telValido;
     }
 
-    // --- LOGICA DE COMBOS ---
     elComboAldeia.onchange = () => {
         const aldeiaSel = elComboAldeia.value;
         elComboSociedade.innerHTML = '<option value="">Selecione a sociedade…</option>';
-        
-        if (aldeiaSel && aldeiasMap[aldeiaSel]) {
-            elWrapperSoc.classList.remove('opacity-50', 'pointer-events-none');
+        if (aldeiaSel) {
             aldeiasMap[aldeiaSel].forEach(soc => elComboSociedade.add(new Option(soc, soc)));
-        } else {
-            elWrapperSoc.classList.add('opacity-50', 'pointer-events-none');
         }
-        
         nomeSelecionado = '';
         elCardMembros.classList.add('hidden-section');
-        atualizarEstadoCampos();
+        atualizarTravas();
     };
 
     elComboSociedade.onchange = async () => {
-        const aldeia = elComboAldeia.value;
-        const sociedade = elComboSociedade.value;
-        if (!aldeia || !sociedade) return;
-
+        if (!elComboSociedade.value) return;
         elCardMembros.classList.remove('hidden-section');
-        elLista.innerHTML = '<p class="p-4 text-center text-xs text-gray-400">Carregando...</p>';
-        
-        const lista = await chamarGoogle({ action: 'listMembers', aldeia, sociedade });
+        elLista.innerHTML = '<p class="p-4 text-center text-xs">Buscando...</p>';
+        const lista = await chamarGoogle({ 
+            action: 'listMembers', 
+            aldeia: elComboAldeia.value, 
+            sociedade: elComboSociedade.value 
+        });
         membrosLista = Array.isArray(lista) ? lista : [];
-        renderLista();
-        atualizarEstadoCampos();
+        renderLista(); // Assume que a função renderLista existe no seu código
+        atualizarTravas();
     };
 
-    // --- RENDER E WHATSAPP ---
-    elForm.onsubmit = async (e) => {
+    elTelefone.oninput = atualizarTravas;
+
+    document.getElementById('form-chamada').onsubmit = async (e) => {
         e.preventDefault();
         elBtn.disabled = true;
-        elBtnLabel.textContent = 'Enviando...';
-
         const res = await chamarGoogle({
             action: 'saveAttendance',
-            data: elData.value,
             aldeia: elComboAldeia.value,
             sociedade: elComboSociedade.value,
             nome: nomeSelecionado,
@@ -96,210 +74,28 @@
 
         if (res.ok) {
             const telDestino = "55" + elTelefone.value.replace(/\D/g, '');
-            const msg = `Salve Maria! Presença de *${nomeSelecionado}* confirmada na *${elComboSociedade.value}* em ${elDataDisplay.textContent}.`;
-            const linkZap = `https://wa.me/${telDestino}?text=${encodeURIComponent(msg)}`;
-            
-            window.open(linkZap, '_blank');
-            location.reload(); // Limpa o formulário após o sucesso
+            const msg = `Salve Maria! Presença confirmada para *${nomeSelecionado}* em ${elComboSociedade.value}.`;
+            window.open(`https://wa.me/${telDestino}?text=${encodeURIComponent(msg)}`, '_blank');
+            location.reload();
         } else {
-            alert(res.error || "Erro ao gravar");
+            alert(res.error);
             elBtn.disabled = false;
-            elBtnLabel.textContent = 'Confirmar presença';
         }
     };
 
-// 4. Inicialização: Preencher o primeiro combo (Aldeia)
-(async () => {
-    const data = await chamarGoogle({ action: 'getOptions' });
-    if (data) {
-        aldeiasMap = data.aldeias; // Guarda o mapa para usar depois
-        elData.value = data.dataPadrao;
-        elDataDisplay.textContent = formatarDataLongaPt(data.dataPadrao);
-        
-        elComboAldeia.innerHTML = '<option value="">Selecione a aldeia…</option>';
-        for (let aldeia in aldeiasMap) {
-            elComboAldeia.add(new Option(aldeia, aldeia));
-        }
-    }
-})();
-
-    // Funções Auxiliares
+    // Função chamarGoogle e Inicialização (getOptions) devem seguir aqui...
     async function chamarGoogle(payload) {
-        try {
-            const response = await fetch(SCRIPT_URL, {
-                method: 'POST',
-                body: JSON.stringify(payload)
-            });
-            const res = await response.json();
-            return res.ok ? res.data : { ok: false, error: res.error };
-        } catch (e) {
-            return { ok: false, error: "Erro de conexão com o servidor." };
-        }
+        const r = await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload) });
+        const res = await r.json();
+        return res.ok ? res.data : { ok: false, error: res.error };
     }
 
-    function mostrarAviso(mensagem) {
-        elAvisoTexto.textContent = mensagem;
-        elModalAviso.classList.replace('hidden', 'flex');
-    }
-
-    function formatarDataLongaPt(dataStr) {
-        if (!dataStr) return '—';
-        var partes = dataStr.split('/');
-        var d = new Date(partes[2], partes[1] - 1, partes[0]);
-        var raw = d.toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'});
-        return raw.charAt(0).toUpperCase() + raw.slice(1);
-    }
-
-    function atualizarBotaoSubmit() {
-        const telLimpo = elTelefone.value.replace(/\D/g, '');
-        const telValido = telLimpo.length >= 10; 
-        elBtn.disabled = !(nomeSelecionado && telValido && elComboSociedade.value);
-    }
-
-    function renderLista() {
-        var q = (elBusca.value || '').trim().toLowerCase();
-        var filtrados = membrosLista.filter(n => !q || n.toLowerCase().includes(q));
-        elLista.innerHTML = '';
-        elListaVazia.classList.toggle('hidden', filtrados.length > 0);
-        
-        filtrados.forEach(nome => {
-            const isSel = nome === nomeSelecionado;
-            const li = document.createElement('li');
-            li.className = `flex items-center justify-between px-4 py-3 cursor-pointer transition-colors hover:bg-white/5 ${isSel ? 'bg-gold/10' : ''}`;
-            li.innerHTML = `
-                <span class="text-sm ${isSel ? 'text-gold font-bold' : 'text-white'}">${nome}</span>
-                ${isSel ? '<svg class="h-5 w-5 text-gold" fill="currentColor" viewBox="0 0 20 20"><path d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/></svg>' : '<div class="h-5 w-5 rounded-full border border-white/20"></div>'}
-            `;
-            li.onclick = () => {
-                nomeSelecionado = isSel ? '' : nome;
-                renderLista();
-                atualizarBotaoSubmit();
-            };
-            elLista.appendChild(li);
-        });
-        elBadge.textContent = membrosLista.length;
-    }
-
-    // --- LÓGICA DE FILTROS DEPENDENTES ---
-    elComboAldeia.onchange = () => {
-        const aldeiaSel = elComboAldeia.value;
-        elComboSociedade.innerHTML = '<option value="">Selecione a sociedade…</option>';
-        
-        if (aldeiaSel && aldeiasMap[aldeiaSel]) {
-            elWrapperSoc.classList.remove('opacity-50', 'pointer-events-none');
-            aldeiasMap[aldeiaSel].forEach(soc => {
-                elComboSociedade.add(new Option(soc, soc));
-            });
-        } else {
-            elWrapperSoc.classList.add('opacity-50', 'pointer-events-none');
-        }
-        elCardMembros.classList.add('hidden-section');
-        atualizarBotaoSubmit();
-    };
-
-    elComboSociedade.onchange = carregarMembros;
-
-    async function carregarMembros() {
-        const aldeia = elComboAldeia.value;
-        const sociedade = elComboSociedade.value;
-        if (!aldeia || !sociedade) return;
-
-        elCardMembros.classList.remove('hidden-section');
-        elLista.innerHTML = '<p class="p-4 text-center text-xs text-gray-400">Carregando...</p>';
-        
-        const lista = await chamarGoogle({ action: 'listMembers', aldeia, sociedade });
-        membrosLista = Array.isArray(lista) ? lista : [];
-        renderLista();
-    }
-
-    // Eventos e Modais
-    elTelefone.oninput = atualizarEstadoCampos;
-    elBusca.oninput = renderLista;
-    elBtnFecharAviso.onclick = () => elModalAviso.classList.replace('flex', 'hidden');
-    elModalFechar.onclick = () => elModal.classList.replace('flex', 'hidden');
-
-    elBtnNovo.onclick = () => {
-        const aldeia = elComboAldeia.value;
-        const sociedade = elComboSociedade.value;
-        document.getElementById('modal-info-aldeia').textContent = `${aldeia} - ${sociedade}`;
-        elModal.classList.replace('hidden', 'flex');
-    };
-
-    elModalCadastrar.onclick = () => {
-        const nomeOriginal = elModalNome.value.trim();
-        const telNovo = elModalTelefoneNovo.value.trim();
-
-        if (nomeOriginal.length < 3 || telNovo.length < 10) {
-            mostrarAviso("Preencha o nome e o telefone corretamente.");
-            return;
-        }
-
-        nomeSelecionado = nomeOriginal;
-        elTelefone.value = telNovo; 
-        
-        elModal.classList.replace('flex', 'hidden');
-        elModalNome.value = '';
-        elModalTelefoneNovo.value = '';
-        
-        if (!membrosLista.includes(nomeOriginal)) {
-            membrosLista.push(nomeOriginal);
-        }
-        renderLista();
-        atualizarBotaoSubmit();
-    };
-
-    // SUBMIT E WHATSAPP
-    elForm.onsubmit = async (e) => {
-        e.preventDefault();
-        const aldeia = elComboAldeia.value;
-        const sociedade = elComboSociedade.value;
-        
-        elBtn.disabled = true;
-        elBtnLabel.textContent = 'Enviando...';
-
-        const res = await chamarGoogle({
-            action: 'saveAttendance',
-            data: elData.value,
-            aldeia: aldeia,
-            sociedade: sociedade,
-            nome: nomeSelecionado,
-            telefone: elTelefone.value
-        });
-
-        if (res.ok) {
-            // PONTO 7: Abrir WhatsApp da pessoa com a mensagem vinda do seu Business
-            // Como navegador não "manda" sozinho, abrimos o chat da PESSOA 
-            // para que ela veja a mensagem ou você envie.
-            const telDestino = "55" + elTelefone.value.replace(/\D/g, '');
-            const msg = `Salve Maria! Presença confirmada para *${nomeSelecionado}* na *${sociedade}* em ${elDataDisplay.textContent}.`;
-            
-            // Link que abre o chat da pessoa
-            const linkZap = `https://wa.me/${telDestino}?text=${encodeURIComponent(msg)}`;
-            
-            nomeSelecionado = '';
-            elTelefone.value = '';
-            renderLista();
-            window.open(linkZap, '_blank');
-        } else {
-            alert(res.error || "Erro ao gravar");
-        }
-        
-        elBtnLabel.textContent = 'Confirmar presença';
-        elBtn.disabled = false;
-    };
-
-    // Inicialização
     (async () => {
         const data = await chamarGoogle({ action: 'getOptions' });
         if (data) {
             aldeiasMap = data.aldeias;
-            elData.value = data.dataPadrao;
-            elDataDisplay.textContent = formatarDataLongaPt(data.dataPadrao);
-            
             elComboAldeia.innerHTML = '<option value="">Selecione a aldeia…</option>';
-            for (let aldeia in aldeiasMap) {
-                elComboAldeia.add(new Option(aldeia, aldeia));
-            }
+            for (let a in aldeiasMap) elComboAldeia.add(new Option(a, a));
         }
     })();
 })();

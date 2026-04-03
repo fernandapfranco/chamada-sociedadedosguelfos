@@ -1,17 +1,14 @@
 (function () {
     const SCRIPT_URL = import.meta.env.VITE_SCRIPT_URL;
-    const WHATSAPP_BUSINESS = "555135174739"; // Seu número Business
 
     var aldeiasMap = {};
     var membrosLista = [];
     var nomeSelecionado = '';
 
-    // Elementos Novos (Filtros Dependentes)
+    // Elementos
     const elComboAldeia = document.getElementById('combo-aldeia');
     const elComboSociedade = document.getElementById('combo-sociedade');
     const elWrapperSoc = document.getElementById('wrapper-sociedade');
-
-    // Elementos Existentes
     const elForm = document.getElementById('form-chamada');
     const elData = document.getElementById('data');
     const elDataDisplay = document.getElementById('data-display');
@@ -22,7 +19,6 @@
     const elLista = document.getElementById('lista-membros');
     const elListaVazia = document.getElementById('lista-membros-vazia');
     const elTelefone = document.getElementById('telefone'); 
-    const elMsg = document.getElementById('msg-global');
     const elBtn = document.getElementById('btn-submit');
     const elBtnLabel = document.getElementById('btn-label');
 
@@ -36,53 +32,81 @@
     const elAvisoTexto = document.getElementById('aviso-texto');
     const elBtnFecharAviso = document.getElementById('btn-fechar-aviso');
 
-    function atualizarBotaoSubmit() {
-    const telLimpo = elTelefone.value.replace(/\D/g, '');
-    const telValido = telLimpo.length >= 10;
-    
-    // SÓ LIBERA SE: Tem Aldeia + Tem Sociedade + Tem Nome Selecionado + Tem Telefone
-    const tudoPreenchido = elComboAldeia.value && elComboSociedade.value && nomeSelecionado && telValido;
-    
-    elBtn.disabled = !tudoPreenchido;
-}
+    // --- BLOQUEIO DE SEGURANÇA ---
+    function atualizarEstadoCampos() {
+        const aldeiaOk = elComboAldeia.value !== "";
+        const socOk = elComboSociedade.value !== "";
+        const nomeOk = nomeSelecionado !== "";
 
-// 2. Lógica de Cascata: Aldeia -> Sociedade
-elComboAldeia.onchange = () => {
-    const aldeiaSel = elComboAldeia.value;
-    elComboSociedade.innerHTML = '<option value="">Selecione a sociedade…</option>';
-    
-    if (aldeiaSel) {
-        elWrapperSoc.classList.remove('opacity-50', 'pointer-events-none');
-        // Pega as sociedades do mapa que veio do Google
-        aldeiasMap[aldeiaSel].forEach(soc => {
-            elComboSociedade.add(new Option(soc, soc));
-        });
-    } else {
-        elWrapperSoc.classList.add('opacity-50', 'pointer-events-none');
+        // Só libera o telefone se os anteriores estiverem preenchidos
+        elTelefone.disabled = !(aldeiaOk && socOk && nomeOk);
+        elTelefone.parentElement.style.opacity = elTelefone.disabled ? "0.5" : "1";
+
+        const telLimpo = elTelefone.value.replace(/\D/g, '');
+        const telValido = telLimpo.length >= 10;
+        
+        elBtn.disabled = !(nomeOk && telValido && socOk);
     }
-    
-    // Sempre que mudar a aldeia, reseta a seleção de membro
-    nomeSelecionado = '';
-    elCardMembros.classList.add('hidden-section');
-    atualizarBotaoSubmit();
-};
 
-// 3. Carregar membros quando selecionar a Sociedade
-elComboSociedade.onchange = async () => {
-    const aldeia = elComboAldeia.value;
-    const sociedade = elComboSociedade.value;
-    
-    if (!aldeia || !sociedade) return;
+    // --- LOGICA DE COMBOS ---
+    elComboAldeia.onchange = () => {
+        const aldeiaSel = elComboAldeia.value;
+        elComboSociedade.innerHTML = '<option value="">Selecione a sociedade…</option>';
+        
+        if (aldeiaSel && aldeiasMap[aldeiaSel]) {
+            elWrapperSoc.classList.remove('opacity-50', 'pointer-events-none');
+            aldeiasMap[aldeiaSel].forEach(soc => elComboSociedade.add(new Option(soc, soc)));
+        } else {
+            elWrapperSoc.classList.add('opacity-50', 'pointer-events-none');
+        }
+        
+        nomeSelecionado = '';
+        elCardMembros.classList.add('hidden-section');
+        atualizarEstadoCampos();
+    };
 
-    elCardMembros.classList.remove('hidden-section');
-    elLista.innerHTML = '<p class="p-4 text-center text-xs text-gray-400">Buscando membros...</p>';
-    
-    // Envia os dois campos separados para o Apps Script
-    const lista = await chamarGoogle({ action: 'listMembers', aldeia, sociedade });
-    membrosLista = Array.isArray(lista) ? lista : [];
-    renderLista();
-    atualizarBotaoSubmit();
-};
+    elComboSociedade.onchange = async () => {
+        const aldeia = elComboAldeia.value;
+        const sociedade = elComboSociedade.value;
+        if (!aldeia || !sociedade) return;
+
+        elCardMembros.classList.remove('hidden-section');
+        elLista.innerHTML = '<p class="p-4 text-center text-xs text-gray-400">Carregando...</p>';
+        
+        const lista = await chamarGoogle({ action: 'listMembers', aldeia, sociedade });
+        membrosLista = Array.isArray(lista) ? lista : [];
+        renderLista();
+        atualizarEstadoCampos();
+    };
+
+    // --- RENDER E WHATSAPP ---
+    elForm.onsubmit = async (e) => {
+        e.preventDefault();
+        elBtn.disabled = true;
+        elBtnLabel.textContent = 'Enviando...';
+
+        const res = await chamarGoogle({
+            action: 'saveAttendance',
+            data: elData.value,
+            aldeia: elComboAldeia.value,
+            sociedade: elComboSociedade.value,
+            nome: nomeSelecionado,
+            telefone: elTelefone.value
+        });
+
+        if (res.ok) {
+            const telDestino = "55" + elTelefone.value.replace(/\D/g, '');
+            const msg = `Salve Maria! Presença de *${nomeSelecionado}* confirmada na *${elComboSociedade.value}* em ${elDataDisplay.textContent}.`;
+            const linkZap = `https://wa.me/${telDestino}?text=${encodeURIComponent(msg)}`;
+            
+            window.open(linkZap, '_blank');
+            location.reload(); // Limpa o formulário após o sucesso
+        } else {
+            alert(res.error || "Erro ao gravar");
+            elBtn.disabled = false;
+            elBtnLabel.textContent = 'Confirmar presença';
+        }
+    };
 
 // 4. Inicialização: Preencher o primeiro combo (Aldeia)
 (async () => {
@@ -189,8 +213,8 @@ elComboSociedade.onchange = async () => {
     }
 
     // Eventos e Modais
+    elTelefone.oninput = atualizarEstadoCampos;
     elBusca.oninput = renderLista;
-    elTelefone.oninput = atualizarBotaoSubmit;
     elBtnFecharAviso.onclick = () => elModalAviso.classList.replace('flex', 'hidden');
     elModalFechar.onclick = () => elModal.classList.replace('flex', 'hidden');
 

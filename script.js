@@ -36,6 +36,69 @@
     const elAvisoTexto = document.getElementById('aviso-texto');
     const elBtnFecharAviso = document.getElementById('btn-fechar-aviso');
 
+    function atualizarBotaoSubmit() {
+    const telLimpo = elTelefone.value.replace(/\D/g, '');
+    const telValido = telLimpo.length >= 10;
+    
+    // SÓ LIBERA SE: Tem Aldeia + Tem Sociedade + Tem Nome Selecionado + Tem Telefone
+    const tudoPreenchido = elComboAldeia.value && elComboSociedade.value && nomeSelecionado && telValido;
+    
+    elBtn.disabled = !tudoPreenchido;
+}
+
+// 2. Lógica de Cascata: Aldeia -> Sociedade
+elComboAldeia.onchange = () => {
+    const aldeiaSel = elComboAldeia.value;
+    elComboSociedade.innerHTML = '<option value="">Selecione a sociedade…</option>';
+    
+    if (aldeiaSel) {
+        elWrapperSoc.classList.remove('opacity-50', 'pointer-events-none');
+        // Pega as sociedades do mapa que veio do Google
+        aldeiasMap[aldeiaSel].forEach(soc => {
+            elComboSociedade.add(new Option(soc, soc));
+        });
+    } else {
+        elWrapperSoc.classList.add('opacity-50', 'pointer-events-none');
+    }
+    
+    // Sempre que mudar a aldeia, reseta a seleção de membro
+    nomeSelecionado = '';
+    elCardMembros.classList.add('hidden-section');
+    atualizarBotaoSubmit();
+};
+
+// 3. Carregar membros quando selecionar a Sociedade
+elComboSociedade.onchange = async () => {
+    const aldeia = elComboAldeia.value;
+    const sociedade = elComboSociedade.value;
+    
+    if (!aldeia || !sociedade) return;
+
+    elCardMembros.classList.remove('hidden-section');
+    elLista.innerHTML = '<p class="p-4 text-center text-xs text-gray-400">Buscando membros...</p>';
+    
+    // Envia os dois campos separados para o Apps Script
+    const lista = await chamarGoogle({ action: 'listMembers', aldeia, sociedade });
+    membrosLista = Array.isArray(lista) ? lista : [];
+    renderLista();
+    atualizarBotaoSubmit();
+};
+
+// 4. Inicialização: Preencher o primeiro combo (Aldeia)
+(async () => {
+    const data = await chamarGoogle({ action: 'getOptions' });
+    if (data) {
+        aldeiasMap = data.aldeias; // Guarda o mapa para usar depois
+        elData.value = data.dataPadrao;
+        elDataDisplay.textContent = formatarDataLongaPt(data.dataPadrao);
+        
+        elComboAldeia.innerHTML = '<option value="">Selecione a aldeia…</option>';
+        for (let aldeia in aldeiasMap) {
+            elComboAldeia.add(new Option(aldeia, aldeia));
+        }
+    }
+})();
+
     // Funções Auxiliares
     async function chamarGoogle(payload) {
         try {

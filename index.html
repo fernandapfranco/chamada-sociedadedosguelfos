@@ -145,19 +145,23 @@
         </div>
     </div>
 
-    <div id="modal-novo" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 p-4 backdrop-blur-sm">
-        <div class="card-glass w-full max-w-sm rounded-2xl border border-gold/30 p-6 text-center">
-            <h2 id="modal-titulo" class="font-serif text-gold uppercase text-lg">Novo Membro</h2>
-            <p id="modal-info-aldeia" class="text-[10px] uppercase tracking-widest mb-4 text-gray-400">Carregando...</p>
+<div id="modal-novo" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 p-4 backdrop-blur-sm">
+    <div class="card-glass w-full max-w-sm rounded-2xl border border-gold/30 p-6 text-center">
+        <h2 id="modal-titulo" class="font-serif text-gold uppercase text-lg">Novo Membro</h2>
+        <p id="modal-info-aldeia" class="text-[10px] uppercase tracking-widest mb-4 text-gray-400">Carregando...</p>
+        
+        <div class="space-y-3">
+            <input type="text" id="modal-nome" class="w-full rounded-xl border border-gold/40 bg-black/60 p-3 text-white focus:border-gold outline-none text-center uppercase" placeholder="NOME COMPLETO" />
             
-            <input type="text" id="modal-nome" class="mb-4 w-full rounded-xl border border-gold/40 bg-black/60 p-3 text-white focus:border-gold outline-none text-center uppercase" placeholder="NOME COMPLETO" />
-            
-            <div class="flex gap-2">
-                <button type="button" id="modal-novo-fechar" class="flex-1 rounded-xl border border-white/20 py-3 text-xs text-white uppercase">Cancelar</button>
-                <button type="button" id="modal-btn-cadastrar" class="flex-1 rounded-xl bg-gold py-3 text-xs font-bold text-black uppercase">Salvar</button>
-            </div>
+            <input type="tel" id="modal-telefone-novo" class="w-full rounded-xl border border-gold/40 bg-black/60 p-3 text-white focus:border-gold outline-none text-center" placeholder="WHATSAPP (DDD + NÚMERO)" />
+        </div>
+        
+        <div class="flex gap-2 mt-6">
+            <button type="button" id="modal-novo-fechar" class="flex-1 rounded-xl border border-white/20 py-3 text-xs text-white uppercase">Cancelar</button>
+            <button type="button" id="modal-btn-cadastrar" class="flex-1 rounded-xl bg-gold py-3 text-xs font-bold text-black uppercase">Salvar</button>
         </div>
     </div>
+</div>
 
     <div id="modal-aviso" class="fixed inset-0 z-[60] hidden items-center justify-center bg-black/40 p-4 backdrop-blur-sm">
         <div class="card-glass w-full max-w-xs rounded-2xl border border-red-500/50 p-6 text-center shadow-2xl">

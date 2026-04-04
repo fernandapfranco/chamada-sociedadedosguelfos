@@ -32,22 +32,15 @@
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="style.css">
     <style>
+        /* Estilo para campos desabilitados */
         .field-disabled {
-            opacity: 0.4;
+            opacity: 0.3;
             pointer-events: none;
-            filter: grayscale(0.5);
+            filter: grayscale(0.8);
+            transition: all 0.3s ease;
         }
         .hidden-section {
             display: none;
-        }
-        /* Garantir centralização perfeita das modais */
-        .modal-center {
-            display: none;
-            align-items: center;
-            justify-content: center;
-        }
-        .modal-center.active {
-            display: flex;
         }
     </style>
 </head>
@@ -68,8 +61,6 @@
             </header>
 
             <form id="form-chamada" class="space-y-4" novalidate>
-                <input type="hidden" id="data" name="data" value="" />
-
                 <div class="card-glass rounded-2xl border p-4 shadow-card sm:p-5">
                     <div class="flex gap-4">
                         <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-amber-600/40 bg-black/40 text-gold">
@@ -79,7 +70,7 @@
                             </svg>
                         </div>
                         <div class="min-w-0 flex-1">
-                            <p class="font-label-custom font-semibold uppercase tracking-widest text-gold">Encontro</p>
+                            <p class="font-label-custom font-semibold uppercase tracking-widest text-gold text-[10px]">Data do Encontro</p>
                             <p id="data-display" class="mt-1 font-sans text-base font-semibold leading-snug text-white sm:text-lg">
                                 Carregando data...
                             </p>
@@ -95,7 +86,7 @@
                             </svg>
                         </div>
                         <div class="min-w-0 flex-1">
-                            <label for="combo-aldeia" class="font-label-custom font-semibold uppercase tracking-widest text-gold">Aldeia</label>
+                            <label for="combo-aldeia" class="font-label-custom font-semibold uppercase tracking-widest text-gold text-[10px]">Aldeia</label>
                             <select id="combo-aldeia" class="mt-2 w-full cursor-pointer appearance-none rounded-xl border border-amber-600/50 bg-black/50 py-3 px-3 text-sm text-white focus:border-gold focus:outline-none">
                                 <option value="">Selecione a aldeia</option>
                             </select>
@@ -111,9 +102,9 @@
                             </svg>
                         </div>
                         <div class="min-w-0 flex-1">
-                            <label for="combo-sociedade" class="font-label-custom font-semibold uppercase tracking-widest text-gold">Sociedade</label>
+                            <label for="combo-sociedade" class="font-label-custom font-semibold uppercase tracking-widest text-gold text-[10px]">Sociedade</label>
                             <select id="combo-sociedade" disabled class="mt-2 w-full cursor-pointer appearance-none rounded-xl border border-amber-600/50 bg-black/50 py-3 px-3 text-sm text-white focus:border-gold focus:outline-none disabled:cursor-not-allowed">
-                                <option value="">Selecione sociedade</option>
+                                <option value="">Selecione a sociedade</option>
                             </select>
                         </div>
                     </div>
@@ -125,26 +116,25 @@
                             <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
                                 <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
                                 <circle cx="9" cy="7" r="4" />
-                                <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" />
                             </svg>
                         </div>
                         <div class="flex-1">
                             <div class="flex items-center justify-between">
                                 <div class="flex items-center gap-2">
-                                    <span class="font-label-custom font-semibold text-gold uppercase tracking-widest">Membros</span>
+                                    <span class="font-label-custom font-semibold text-gold uppercase tracking-widest text-[10px]">Membros</span>
                                     <span id="badge-membros" class="rounded-full bg-emerald-600/90 px-2 py-0.5 text-[10px] font-semibold text-white">0</span>
                                 </div>
-                                <button type="button" id="btn-novo-membro" class="rounded-lg bg-gold px-3 py-1.5 text-[10px] font-bold text-black hover:bg-gold-glow">
+                                <button type="button" id="btn-novo-membro" class="rounded-lg bg-gold px-3 py-1.5 text-[10px] font-bold text-black hover:bg-gold-glow uppercase">
                                     + NOVO
                                 </button>
                             </div>
-                            <input type="search" id="busca-membro" class="mt-2 w-full rounded-xl border border-white/10 bg-black/45 py-2 px-3 text-sm text-white placeholder:text-gray-500 outline-none" placeholder="BUSCAR..." />
+                            <input type="search" id="busca-membro" class="mt-2 w-full rounded-xl border border-white/10 bg-black/45 py-2 px-3 text-sm text-white placeholder:text-gray-500 outline-none uppercase" placeholder="BUSCAR NOME..." />
                         </div>
                     </div>
                     
                     <div id="lista-membros-wrap" class="max-h-60 overflow-y-auto rounded-xl border border-white/5 bg-black/30">
                         <ul id="lista-membros" class="divide-y divide-white/5"></ul>
-                        <p id="lista-membros-vazia" class="hidden px-4 py-6 text-center text-sm text-gray-500 uppercase">Nenhum membro cadastrado.</p>
+                        <p id="lista-membros-vazia" class="hidden px-4 py-6 text-center text-[10px] text-gray-500 uppercase tracking-widest">Nenhum membro cadastrado.</p>
                     </div>
                 </div>
 
@@ -157,7 +147,7 @@
                             </svg>
                         </div>
                         <div class="min-w-0 flex-1">
-                            <label for="email" class="font-label-custom font-semibold uppercase tracking-widest text-gold">E-mail para confirmação</label>
+                            <label for="email" class="font-label-custom font-semibold uppercase tracking-widest text-gold text-[10px]">E-mail para confirmação</label>
                             <input type="email" id="email" disabled class="mt-2 w-full rounded-xl border border-amber-600/40 bg-black/50 px-4 py-3 text-sm text-white focus:border-gold outline-none disabled:cursor-not-allowed" placeholder="seu@email.com" required />
                         </div>
                     </div>
@@ -173,7 +163,7 @@
     <div id="modal-novo" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 p-4 backdrop-blur-sm">
         <div class="card-glass w-full max-w-sm rounded-2xl border border-gold/30 p-6 text-center">
             <h2 id="modal-titulo" class="font-serif text-gold uppercase text-lg">Novo Membro</h2>
-            <p id="modal-info-aldeia" class="text-[10px] uppercase tracking-widest mb-4 text-gray-400">Carregando...</p>
+            <p id="modal-info-aldeia" class="text-[10px] uppercase tracking-widest mb-4 text-gray-400">Sociedade Selecionada</p>
             <div class="space-y-3">
                 <input type="text" id="modal-nome" class="w-full rounded-xl border border-gold/40 bg-black/60 p-3 text-white focus:border-gold outline-none text-center uppercase" placeholder="NOME COMPLETO" />
             </div>
@@ -191,8 +181,8 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                 </svg>
             </div>
-            <h2 class="font-serif text-gold uppercase text-xl mb-2">Presença Confirmada!</h2>
-            <p class="text-sm text-gray-400 uppercase tracking-widest mb-6 leading-relaxed">Presença confirmada com sucesso.</p>
+            <h2 class="font-serif text-gold uppercase text-xl mb-2">Registro Concluído!</h2>
+            <p class="text-sm text-gray-400 uppercase tracking-widest mb-6 leading-relaxed">Sua presença foi confirmada nos registros.</p>
             <button type="button" onclick="location.reload()" class="w-full rounded-xl bg-gold py-3 text-xs font-bold text-black uppercase hover:bg-gold-glow transition-all">
                 Concluir
             </button>

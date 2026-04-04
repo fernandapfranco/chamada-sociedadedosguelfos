@@ -31,28 +31,6 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="style.css">
-    <style>
-        /* Estilos de Validação e Estado */
-        .field-disabled {
-            opacity: 0.3;
-            pointer-events: none;
-            filter: grayscale(0.8);
-            transition: all 0.4s ease;
-        }
-
-        .hidden-section {
-            display: none !important;
-        }
-
-        /* Ajuste para o scroll suave da lista */
-        #lista-membros-wrap::-webkit-scrollbar {
-            width: 4px;
-        }
-        #lista-membros-wrap::-webkit-scrollbar-thumb {
-            background: #D4AF37;
-            border-radius: 10px;
-        }
-    </style>
 </head>
 <body class="min-h-screen font-sans antialiased text-white">
     <div class="page-wrap flex min-h-screen flex-col items-center justify-start p-4 pb-10 sm:justify-center sm:p-6">
@@ -70,7 +48,7 @@
                 </p>
             </header>
 
-            <form id="form-chamada" class="space-y-4" novalidate>
+            <form id="form-chamada" class="space-y-4">
                 <input type="hidden" id="data" name="data" value="" />
 
                 <div class="card-glass rounded-2xl border p-4 shadow-card sm:p-5">
@@ -82,7 +60,7 @@
                             </svg>
                         </div>
                         <div class="min-w-0 flex-1">
-                            <p class="font-label-custom font-semibold uppercase tracking-widest text-gold text-[10px]">Data do Encontro</p>
+                            <p class="font-label-custom font-semibold uppercase tracking-widest text-gold">Encontro</p>
                             <p id="data-display" class="mt-1 font-sans text-base font-semibold leading-snug text-white sm:text-lg">
                                 Carregando data...
                             </p>
@@ -90,7 +68,7 @@
                     </div>
                 </div>
 
-                <div id="wrapper-aldeia" class="card-glass rounded-2xl border p-4 shadow-card sm:p-5 transition-all">
+                <div class="card-glass rounded-2xl border p-4 shadow-card sm:p-5">
                     <div class="flex gap-4">
                         <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-amber-600/40 bg-black/40 text-gold">
                             <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
@@ -98,30 +76,18 @@
                             </svg>
                         </div>
                         <div class="min-w-0 flex-1">
-                            <label for="combo-aldeia" class="font-label-custom font-semibold uppercase tracking-widest text-gold text-[10px]">Aldeia</label>
-                            <div class="relative">
-                                <select id="combo-aldeia" class="mt-2 w-full cursor-pointer appearance-none rounded-xl border border-amber-600/50 bg-black/50 py-3 px-3 text-sm text-white focus:border-gold focus:outline-none">
-                                    <option value="">Selecione a aldeia</option>
+                            <label for="combo-aldeia-sociedade" class="font-label-custom font-semibold uppercase tracking-widest text-gold">
+                                Aldeia / Sociedade
+                            </label>
+                            <div class="relative mt-2">
+                                <select id="combo-aldeia-sociedade" class="w-full cursor-pointer appearance-none rounded-xl border border-amber-600/50 bg-black/50 py-3 pl-3 pr-10 text-sm text-white focus:border-gold focus:outline-none">
+                                    <option value="">Selecione a sociedade…</option>
                                 </select>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="wrapper-sociedade" class="card-glass field-disabled rounded-2xl border p-4 shadow-card sm:p-5 transition-all">
-                    <div class="flex gap-4">
-                        <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-amber-600/40 bg-black/40 text-gold">
-                            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                                <path d="M12 21s-8-4.5-8-11a8 8 0 1116 0c0 6.5-8 11-8 11z" />
-                                <circle cx="12" cy="10" r="2.5" />
-                            </svg>
-                        </div>
-                        <div class="min-w-0 flex-1">
-                            <label for="combo-sociedade" class="font-label-custom font-semibold uppercase tracking-widest text-gold text-[10px]">Sociedade</label>
-                            <div class="relative">
-                                <select id="combo-sociedade" disabled class="mt-2 w-full cursor-pointer appearance-none rounded-xl border border-amber-600/50 bg-black/50 py-3 px-3 text-sm text-white focus:border-gold focus:outline-none disabled:cursor-not-allowed">
-                                    <option value="">Selecione a sociedade</option>
-                                </select>
+                                <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-gold/80">
+                                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -133,29 +99,30 @@
                             <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
                                 <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
                                 <circle cx="9" cy="7" r="4" />
+                                <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" />
                             </svg>
                         </div>
                         <div class="flex-1">
                             <div class="flex items-center justify-between">
                                 <div class="flex items-center gap-2">
-                                    <span class="font-label-custom font-semibold text-gold uppercase tracking-widest text-[10px]">Membros</span>
+                                    <span class="font-label-custom font-semibold text-gold uppercase tracking-widest">Membros</span>
                                     <span id="badge-membros" class="rounded-full bg-emerald-600/90 px-2 py-0.5 text-[10px] font-semibold text-white">0</span>
                                 </div>
-                                <button type="button" id="btn-novo-membro" class="rounded-lg bg-gold px-3 py-1.5 text-[10px] font-bold text-black hover:bg-gold-glow uppercase transition-all">
+                                <button type="button" id="btn-novo-membro" class="rounded-lg bg-gold px-3 py-1.5 text-[10px] font-bold text-black hover:bg-gold-glow">
                                     + NOVO
                                 </button>
                             </div>
-                            <input type="search" id="busca-membro" class="mt-2 w-full rounded-xl border border-white/10 bg-black/45 py-2 px-3 text-sm text-white placeholder:text-gray-500 outline-none uppercase" placeholder="BUSCAR NOME..." />
+                            <input type="search" id="busca-membro" class="mt-2 w-full rounded-xl border border-white/10 bg-black/45 py-2 px-3 text-sm text-white placeholder:text-gray-500 outline-none" placeholder="BUSCAR..." />
                         </div>
                     </div>
                     
                     <div id="lista-membros-wrap" class="max-h-60 overflow-y-auto rounded-xl border border-white/5 bg-black/30">
                         <ul id="lista-membros" class="divide-y divide-white/5"></ul>
-                        <p id="lista-membros-vazia" class="hidden px-4 py-6 text-center text-[10px] text-gray-500 uppercase tracking-widest">Nenhum membro cadastrado.</p>
+                        <p id="lista-membros-vazia" class="hidden px-4 py-6 text-center text-sm text-gray-500 uppercase">Nenhum membro cadastrado.</p>
                     </div>
                 </div>
 
-                <div id="wrapper-email" class="card-glass field-disabled rounded-2xl border p-4 shadow-card sm:p-5 transition-all">
+                <div class="card-glass rounded-2xl border p-4 shadow-card sm:p-5">
                     <div class="flex gap-4">
                         <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-amber-600/40 bg-black/40 text-gold">
                             <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
@@ -164,17 +131,17 @@
                             </svg>
                         </div>
                         <div class="min-w-0 flex-1">
-                            <label for="email" class="font-label-custom font-semibold uppercase tracking-widest text-gold text-[10px]">E-mail para confirmação</label>
-                            <input type="email" id="email" disabled class="mt-2 w-full rounded-xl border border-amber-600/40 bg-black/50 px-4 py-3 text-sm text-white focus:border-gold outline-none disabled:cursor-not-allowed" placeholder="seu@email.com" required />
+                            <label for="email" class="font-label-custom font-semibold uppercase tracking-widest text-gold">E-mail para confirmação</label>
+                            <input type="email" id="email" class="mt-2 w-full rounded-xl border border-amber-600/40 bg-black/50 px-4 py-3 text-sm text-white focus:border-gold outline-none" placeholder="seu@email.com" required />
                         </div>
                     </div>
                 </div>
 
-                <button type="submit" id="btn-submit" disabled class="btn-submit-guelfo flex w-full items-center justify-center gap-2 rounded-2xl py-4 font-serif text-sm font-bold uppercase tracking-widest text-black shadow-lg disabled:opacity-30 disabled:cursor-not-allowed transition-all">
+                <p id="msg-global" class="hidden rounded-2xl border px-4 py-3 text-sm font-sans"></p>
+
+                <button type="submit" id="btn-submit" disabled class="btn-submit-guelfo flex w-full items-center justify-center gap-2 rounded-2xl py-4 font-serif text-sm font-bold uppercase tracking-widest text-black shadow-lg disabled:opacity-50">
                     <span id="btn-label">Confirmar presença</span>
                 </button>
-
-                <p id="msg-global" class="hidden rounded-2xl border px-4 py-3 text-sm font-sans text-center"></p>
             </form>
         </div>
     </div>
@@ -182,41 +149,26 @@
     <div id="modal-novo" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 p-4 backdrop-blur-sm">
         <div class="card-glass w-full max-w-sm rounded-2xl border border-gold/30 p-6 text-center">
             <h2 id="modal-titulo" class="font-serif text-gold uppercase text-lg">Novo Membro</h2>
-            <p id="modal-info-aldeia" class="text-[10px] uppercase tracking-widest mb-4 text-gray-400">Sociedade Selecionada</p>
-            <div class="space-y-3">
-                <input type="text" id="modal-nome" class="w-full rounded-xl border border-gold/40 bg-black/60 p-3 text-white focus:border-gold outline-none text-center uppercase" placeholder="NOME COMPLETO" />
+            <p id="modal-info-aldeia" class="text-[10px] uppercase tracking-widest mb-4 text-gray-400">Carregando...</p>
+            
+            <input type="text" id="modal-nome" class="mb-4 w-full rounded-xl border border-gold/40 bg-black/60 p-3 text-white focus:border-gold outline-none text-center uppercase" placeholder="NOME COMPLETO" />
+            
+            <div class="flex gap-2">
+                <button type="button" id="modal-novo-fechar" class="flex-1 rounded-xl border border-white/20 py-3 text-xs text-white uppercase">Cancelar</button>
+                <button type="button" id="modal-btn-cadastrar" class="flex-1 rounded-xl bg-gold py-3 text-xs font-bold text-black uppercase">Salvar</button>
             </div>
-            <div class="flex gap-2 mt-6">
-                <button type="button" id="modal-novo-fechar" class="flex-1 rounded-xl border border-white/20 py-3 text-xs text-white uppercase transition-all hover:bg-white/5">Cancelar</button>
-                <button type="button" id="modal-btn-cadastrar" class="flex-1 rounded-xl bg-gold py-3 text-xs font-bold text-black uppercase hover:bg-gold-glow transition-all">Salvar</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="modal-sucesso" class="fixed inset-0 z-[70] hidden items-center justify-center bg-black/90 p-4 backdrop-blur-md">
-        <div class="card-glass w-full max-w-sm rounded-2xl border border-emerald-500/30 p-8 text-center shadow-2xl">
-            <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-emerald-900/20 text-emerald-500 border border-emerald-500/50">
-                <svg class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                </svg>
-            </div>
-            <h2 class="font-serif text-gold uppercase text-xl mb-2">Registro Concluído!</h2>
-            <p class="text-sm text-gray-400 uppercase tracking-widest mb-6 leading-relaxed">Sua presença foi confirmada nos registros.</p>
-            <button type="button" onclick="location.reload()" class="w-full rounded-xl bg-gold py-3 text-xs font-bold text-black uppercase hover:bg-gold-glow transition-all">
-                Concluir
-            </button>
         </div>
     </div>
 
     <div id="modal-aviso" class="fixed inset-0 z-[60] hidden items-center justify-center bg-black/40 p-4 backdrop-blur-sm">
         <div class="card-glass w-full max-w-xs rounded-2xl border border-red-500/50 p-6 text-center shadow-2xl">
-            <div class="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-red-900/30 text-red-500 border border-red-500/50">
+            <div class="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-red-900/30 text-red-500">
                 <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                 </svg>
             </div>
-            <h3 class="mb-2 font-serif text-white uppercase tracking-wider text-sm">Atenção</h3>
-            <p id="aviso-texto" class="mb-6 text-[11px] text-gray-400 uppercase leading-relaxed"></p>
+            <h3 class="mb-2 font-serif text-white uppercase tracking-wider">Atenção</h3>
+            <p id="aviso-texto" class="mb-6 text-xs text-gray-400 uppercase leading-relaxed"></p>
             <button type="button" id="btn-fechar-aviso" class="w-full rounded-xl bg-white/10 py-3 text-[10px] font-bold text-white hover:bg-white/20 uppercase transition-all">
                 Entendido
             </button>

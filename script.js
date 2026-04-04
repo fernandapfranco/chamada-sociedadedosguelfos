@@ -1,6 +1,6 @@
 /**
  * FRONT-END - Sociedade dos Guelfos
- * Lógica de cascata, Modais e Novo Membro
+ * Lógica de cascata, Modais e Validação de Duplicidade
  */
 
 const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwdIgOpTxJJRBX6SBEFqTP6wOo5SI5Ro5tsTTue_sLMGhzdncl-NyaS_fK2GmwKVO72/exec";
@@ -9,6 +9,7 @@ const state = {
     aldeiasMap: {},
     membrosAtuais: [],
     membroSelecionado: null,
+    isNovoMembro: false, // Flag para o back-end
     dataEvento: ""
 };
 
@@ -25,6 +26,7 @@ const dataDisplay = document.getElementById('data-display');
 // Modais
 const modalNovo = document.getElementById('modal-novo');
 const modalSucesso = document.getElementById('modal-sucesso');
+const modalAviso = document.getElementById('modal-aviso');
 
 document.addEventListener('DOMContentLoaded', () => {
     carregarOpcoesIniciais();
@@ -57,7 +59,7 @@ async function carregarOpcoesIniciais() {
 }
 
 function configurarEventos() {
-    // 1. Mudança de Aldeia -> Habilita Sociedade
+    // 1. Mudança de Aldeia
     comboAldeia.addEventListener('change', () => {
         const aldeia = comboAldeia.value;
         resetarAbaixoDe('aldeia');
@@ -69,7 +71,7 @@ function configurarEventos() {
         }
     });
 
-    // 2. Mudança de Sociedade -> Habilita Membros
+    // 2. Mudança de Sociedade
     comboSociedade.addEventListener('change', () => {
         const sociedade = comboSociedade.value;
         const aldeia = comboAldeia.value;
@@ -88,32 +90,47 @@ function configurarEventos() {
         modalNovo.classList.add('flex');
     };
 
-    // 4. Fechar Modal Novo Membro
+    // 4. Fechar Modais
     document.getElementById('modal-novo-fechar').onclick = () => {
         modalNovo.classList.add('hidden');
         modalNovo.classList.remove('flex');
     };
+    
+    document.getElementById('btn-fechar-aviso').onclick = () => {
+        modalAviso.classList.add('hidden');
+        modalAviso.classList.remove('flex');
+    };
 
-    // 5. Cadastrar Novo Membro (Localmente para seleção)
+    // 5. Cadastrar Novo Membro com Validação de Existência
     document.getElementById('modal-btn-cadastrar').onclick = () => {
         const nomeNovo = document.getElementById('modal-nome').value.trim().toUpperCase();
+        
         if (nomeNovo.length < 3) return;
 
+        // VALIDAÇÃO: Verifica se o nome já existe na lista carregada (ignora variações)
+        const existe = state.membrosAtuais.some(m => m.trim().toUpperCase() === nomeNovo);
+
+        if (existe) {
+            document.getElementById('aviso-texto').innerText = `O MEMBRO "${nomeNovo}" JÁ ESTÁ CADASTRADO NESTA SOCIEDADE.`;
+            modalAviso.classList.remove('hidden');
+            modalAviso.classList.add('flex');
+            return;
+        }
+
+        // Se não existe, procede com a seleção
         state.membroSelecionado = nomeNovo;
+        state.isNovoMembro = true; // Sinaliza para o back-end
         
-        // Simula a seleção visual mesmo sem estar na lista carregada
         const listUl = document.getElementById('lista-membros');
         const li = document.createElement('li');
         li.className = "px-4 py-3 cursor-pointer bg-gold/20 text-gold transition-colors text-sm uppercase flex justify-between items-center";
         li.innerHTML = `<span>${nomeNovo} (NOVO)</span>`;
-        listUl.prepend(li); // Coloca no topo da lista
+        listUl.prepend(li); 
 
-        // Habilita campos finais
         wrapperEmail.classList.remove('field-disabled');
         inputEmail.disabled = false;
         btnSubmit.disabled = false;
         
-        // Fecha modal
         document.getElementById('modal-novo-fechar').click();
         inputEmail.focus();
     };
@@ -153,7 +170,10 @@ function renderizarMembros(lista) {
         const li = document.createElement('li');
         li.className = "px-4 py-3 cursor-pointer hover:bg-gold/10 transition-colors text-sm uppercase flex justify-between items-center";
         li.innerHTML = `<span>${nome}</span>`;
-        li.onclick = () => selecionarMembro(nome, li);
+        li.onclick = () => {
+            state.isNovoMembro = false; // Membro já existia
+            selecionarMembro(nome, li);
+        };
         listUl.appendChild(li);
     });
 }
@@ -184,12 +204,12 @@ async function enviarPresenca(e) {
                 aldeia: comboAldeia.value,
                 sociedade: comboSociedade.value,
                 nome: state.membroSelecionado,
-                email: inputEmail.value
+                email: inputEmail.value,
+                isNovoMembro: state.isNovoMembro // Informação crucial para o Code.gs
             })
         });
         const res = await response.json();
         if (res.ok) {
-            // MOSTRA MODAL DE SUCESSO
             modalSucesso.classList.remove('hidden');
             modalSucesso.classList.add('flex');
         }
@@ -208,6 +228,7 @@ function resetarAbaixoDe(nivel) {
     }
     cardMembros.classList.add('hidden-section');
     state.membroSelecionado = null;
+    state.isNovoMembro = false;
     inputEmail.value = "";
     inputEmail.disabled = true;
     wrapperEmail.classList.add('field-disabled');

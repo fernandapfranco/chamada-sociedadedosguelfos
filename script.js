@@ -1,17 +1,13 @@
 (function () {
-    // Integração com variáveis de ambiente do Vite/Vercel
-    const SCRIPT_URL = import.meta.env.VITE_SCRIPT_URL;
-
-    if (!SCRIPT_URL) {
-        console.error("ERRO: VITE_SCRIPT_URL não definida nas variáveis de ambiente.");
-    }
+    // Link direto para funcionamento em arquivos estáticos (Git Web)
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz5TYgDdDlM11DyFSU4aZXi5QDQ2XxezU-qU1SqvRasrdQMq3lLT6rm-IDnY-k-67bY/exec";
 
     var aldeiasMap = {};
     var opcoesCombo = [];
     var membrosLista = [];
     var nomeSelecionado = '';
 
-    // Elementos
+    // Elementos do DOM
     const elForm = document.getElementById('form-chamada');
     const elData = document.getElementById('data');
     const elDataDisplay = document.getElementById('data-display');
@@ -114,102 +110,3 @@
         const op = opcoesCombo[val];
         elCardMembros.classList.remove('hidden-section');
         elLista.innerHTML = '<p class="p-4 text-center text-xs text-gray-400 uppercase">Buscando lista...</p>';
-        
-        const res = await chamarGoogle({ action: 'listMembers', aldeia: op.aldeia, sociedade: op.sociedade });
-        membrosLista = res.ok ? res.data : [];
-        renderLista();
-        atualizarBotaoSubmit();
-    }
-
-    elCombo.onchange = carregarMembros;
-    elBusca.oninput = renderLista;
-    elEmail.oninput = atualizarBotaoSubmit;
-
-    elBtnNovo.onclick = () => {
-        const op = opcoesCombo[elCombo.value];
-        if(!op) {
-            mostrarAviso("Selecione uma Aldeia/Sociedade primeiro.");
-            return;
-        }
-        document.getElementById('modal-info-aldeia').textContent = `${op.aldeia} - ${op.sociedade}`;
-        elModal.classList.replace('hidden', 'flex');
-    };
-
-    elModalFechar.onclick = () => elModal.classList.replace('flex', 'hidden');
-
-    elModalCadastrar.onclick = async () => {
-        const nomeOriginal = elModalNome.value.trim();
-        const op = opcoesCombo[elCombo.value];
-
-        if (nomeOriginal.length < 3) {
-            mostrarAviso("O nome inserido é muito curto.");
-            return;
-        }
-
-        elModalCadastrar.disabled = true;
-        const res = await chamarGoogle({ 
-            action: 'addMember', 
-            nome: nomeOriginal, 
-            aldeia: op.aldeia, 
-            sociedade: op.sociedade 
-        });
-
-        if (res.ok) {
-            elModal.classList.replace('flex', 'hidden');
-            elModalNome.value = '';
-            nomeSelecionado = nomeOriginal;
-            await carregarMembros();
-        } else {
-            mostrarAviso(res.error); 
-        }
-        elModalCadastrar.disabled = false;
-    };
-
-    elForm.onsubmit = async (e) => {
-        e.preventDefault();
-        const op = opcoesCombo[elCombo.value];
-        elBtn.disabled = true;
-        elBtnLabel.textContent = 'PROCESSANDO...';
-
-        const res = await chamarGoogle({
-            action: 'saveAttendance',
-            data: elData.value,
-            aldeia: op.aldeia,
-            sociedade: op.sociedade,
-            nome: nomeSelecionado,
-            email: elEmail.value
-        });
-
-        if (res.ok) {
-            showGlobal('Presença confirmada com sucesso!', 'ok');
-            elBtnLabel.textContent = 'ENVIADO';
-            elEmail.disabled = true;
-            elCombo.disabled = true;
-            elBusca.disabled = true;
-            elBtnNovo.style.display = 'none';
-        } else {
-            showGlobal(res.error, 'erro');
-            elBtnLabel.textContent = 'TENTAR NOVAMENTE';
-            elBtn.disabled = false;
-        }
-    };
-
-    (async () => {
-        if(!SCRIPT_URL) return;
-        const res = await chamarGoogle({ action: 'getOptions' });
-        if (res && res.ok) {
-            aldeiasMap = res.data.aldeias;
-            elData.value = res.data.dataPadrao;
-            elDataDisplay.textContent = formatarDataLongaPt(res.data.dataPadrao);
-            
-            elCombo.innerHTML = '<option value="">Selecione a sociedade…</option>';
-            let i = 0;
-            for (let aldeia in aldeiasMap) {
-                aldeiasMap[aldeia].forEach(soc => {
-                    opcoesCombo.push({ aldeia, sociedade: soc });
-                    elCombo.add(new Option(`${aldeia} - ${soc}`, i++));
-                });
-            }
-        }
-    })();
-})();

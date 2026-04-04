@@ -1,5 +1,12 @@
 (function () {
-    const SCRIPT_URL = import.meta.env.VITE_SCRIPT_URL;
+    // RESOLUÇÃO DO ERRO: Tenta pegar a variável do Vercel, se não existir (undefined), usa a URL direta.
+    let SCRIPT_URL = "";
+    try {
+        SCRIPT_URL = import.meta.env.VITE_SCRIPT_URL;
+    } catch (e) {
+        // Cole aqui a URL da sua NOVA IMPLANTAÇÃO do Apps Script (a de teste)
+        SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwdIgOpTxJJRBX6SBEFqTP6wOo5SI5Ro5tsTTue_sLMGhzdncl-NyaS_fK2GmwKVO72/exec"; 
+    }
 
     var aldeiasMap = {};
     var membrosLista = [];
@@ -10,107 +17,83 @@
     const elComboSociedade = document.getElementById('combo-sociedade');
     const elTelefone = document.getElementById('telefone');
     const elBtn = document.getElementById('btn-submit');
-    const elCardMembros = document.getElementById('card-membros');
     const elLista = document.getElementById('lista-membros');
-    const elBusca = document.getElementById('busca-membro');
+    const elDataDisplay = document.getElementById('data-display');
 
-    // 1. ESTADO INICIAL: BLOQUEIO TOTAL
-    function resetarEstado() {
-        elComboSociedade.disabled = true;
-        elTelefone.disabled = true;
-        elBtn.disabled = true;
-        elBtn.style.opacity = "0.5";
-        elTelefone.parentElement.style.opacity = "0.5";
-        document.getElementById('wrapper-sociedade').style.opacity = "0.5";
-    }
-    resetarEstado();
-
-    // 2. FUNÇÃO DE VALIDAÇÃO (O Cérebro das Travas)
-    function validarFluxo() {
-        // Passo 1: Aldeia selecionada libera Sociedade
+    // --- AS TRAVAS QUE VOCÊ PEDIU ---
+    function aplicarTravas() {
         const aldeiaOk = elComboAldeia.value !== "";
-        elComboSociedade.disabled = !aldeiaOk;
-        document.getElementById('wrapper-sociedade').style.opacity = aldeiaOk ? "1" : "0.5";
-
-        // Passo 2: Nome selecionado libera WhatsApp
+        const socOk = elComboSociedade.value !== "";
         const nomeOk = nomeSelecionado !== "";
-        elTelefone.disabled = !nomeOk;
-        elTelefone.parentElement.style.opacity = nomeOk ? "1" : "0.5";
-
-        // Passo 3: Telefone preenchido libera Botão Registrar
         const telLimpo = elTelefone.value.replace(/\D/g, '');
         const telOk = telLimpo.length >= 10;
 
-        if (aldeiaOk && elComboSociedade.value !== "" && nomeOk && telOk) {
-            elBtn.disabled = false;
-            elBtn.style.opacity = "1";
-        } else {
-            elBtn.disabled = true;
-            elBtn.style.opacity = "0.5";
-        }
+        // Desabilita campos se o anterior não estiver preenchido
+        elComboSociedade.disabled = !aldeiaOk;
+        elTelefone.disabled = !nomeOk;
+        
+        // O Botão só habilita se TUDO estiver preenchido
+        elBtn.disabled = !(aldeiaOk && socOk && nomeOk && telOk);
+        elBtn.style.opacity = elBtn.disabled ? "0.5" : "1";
     }
 
     // Eventos
     elComboAldeia.onchange = () => {
         const aldeiaSel = elComboAldeia.value;
-        elComboSociedade.innerHTML = '<option value="">Selecione a sociedade…</option>';
+        elComboSociedade.innerHTML = '<option value="">SELECIONE SOCIEDADE</option>';
         if (aldeiaSel && aldeiasMap[aldeiaSel]) {
-            aldeiasMap[aldeiaSel].forEach(soc => elComboSociedade.add(new Option(soc, soc)));
+            aldeiasMap[aldeiaSel].forEach(s => elComboSociedade.add(new Option(s, s)));
         }
-        nomeSelecionado = ''; 
-        elCardMembros.classList.add('hidden-section');
-        validarFluxo();
+        nomeSelecionado = '';
+        aplicarTravas();
     };
 
     elComboSociedade.onchange = async () => {
         if (!elComboSociedade.value) return;
-        elCardMembros.classList.remove('hidden-section');
-        elLista.innerHTML = '<p class="p-4 text-center text-xs">Buscando membros...</p>';
-        
+        elLista.innerHTML = '<p class="p-4 text-center text-xs">Buscando...</p>';
         const lista = await chamarGoogle({ 
             action: 'listMembers', 
             aldeia: elComboAldeia.value, 
             sociedade: elComboSociedade.value 
         });
         membrosLista = Array.isArray(lista) ? lista : [];
-        renderLista(); 
-        validarFluxo();
+        renderLista();
+        aplicarTravas();
     };
 
-    elTelefone.oninput = validarFluxo;
+    elTelefone.oninput = aplicarTravas;
 
-    // Função de renderizar (clique no nome define o nomeSelecionado)
     function renderLista() {
-        // ... (lógica de renderização que já usamos)
-        // IMPORTANTE: Dentro do li.onclick, você deve chamar validarFluxo();
-        li.onclick = () => {
-            nomeSelecionado = nome;
-            renderLista();
-            validarFluxo(); // Libera o campo de WhatsApp
-        };
+        elLista.innerHTML = '';
+        membrosLista.forEach(nome => {
+            const isSel = nome === nomeSelecionado;
+            const li = document.createElement('li');
+            li.className = `px-4 py-3 cursor-pointer ${isSel ? 'bg-gold/20' : ''}`;
+            li.innerHTML = `<span class="${isSel ? 'text-gold' : 'text-white'}">${nome}</span>`;
+            li.onclick = () => {
+                nomeSelecionado = nome;
+                renderLista();
+                aplicarTravas();
+            };
+            elLista.appendChild(li);
+        });
     }
-
-    // Inicialização
-    (async () => {
-        try {
-            const data = await chamarGoogle({ action: 'getOptions' });
-            if (data && data.aldeias) {
-                aldeiasMap = data.aldeias;
-                elComboAldeia.innerHTML = '<option value="">Selecione a aldeia…</option>';
-                for (let a in aldeiasMap) {
-                    elComboAldeia.add(new Option(a, a));
-                }
-            } else {
-                console.error("Mapa de aldeias veio vazio. Verifique a aba 'config'.");
-            }
-        } catch (e) {
-            console.error("Erro ao carregar opções iniciais.");
-        }
-    })();
 
     async function chamarGoogle(payload) {
         const r = await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload) });
         const res = await r.json();
         return res.ok ? res.data : { ok: false, error: res.error };
     }
+
+    // Inicialização
+    (async () => {
+        const data = await chamarGoogle({ action: 'getOptions' });
+        if (data && data.aldeias) {
+            aldeiasMap = data.aldeias;
+            elDataDisplay.textContent = data.dataPadrao;
+            elComboAldeia.innerHTML = '<option value="">ALDEIA</option>';
+            for (let a in aldeiasMap) elComboAldeia.add(new Option(a, a));
+            aplicarTravas();
+        }
+    })();
 })();

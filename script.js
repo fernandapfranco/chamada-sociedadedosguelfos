@@ -1,5 +1,5 @@
 (function () {
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx2w5K2BOzum7lBCFvlh9lIH7Qef1BCaBtsfNrSBbwjOYGd4dUJdbjKupmZJxoCi9PX/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz5TYgDdDlM11DyFSU4aZXi5QDQ2XxezU-qU1SqvRasrdQMq3lLT6rm-IDnY-k-67bY/exec";
 
     var aldeiasMap = {};
     var opcoesCombo = [];
@@ -7,6 +7,7 @@
     var nomeSelecionado = '';
 
     const init = async () => {
+        // Elementos principais
         const elForm = document.getElementById('form-chamada');
         const elData = document.getElementById('data');
         const elDataDisplay = document.getElementById('data-display');
@@ -18,6 +19,8 @@
         const elEmail = document.getElementById('email');
         const elBtn = document.getElementById('btn-submit');
         const elBtnLabel = document.getElementById('btn-label');
+        
+        // Elementos do Modal
         const elModal = document.getElementById('modal-novo');
         const elModalFechar = document.getElementById('modal-novo-fechar');
         const elModalNome = document.getElementById('modal-nome');
@@ -33,10 +36,20 @@
             } catch (e) { return { ok: false, error: "Erro de conexão." }; }
         }
 
-        // --- CORREÇÃO DO MODAL ---
+        // Função para formatar a data como "Domingo, 5 de Abril de 2026"
+        function formatarDataLonga(dataStr) {
+            if (!dataStr) return 'CARREGANDO DATA...';
+            const partes = dataStr.split('/');
+            const d = new Date(partes[2], partes[1] - 1, partes[0]);
+            const opcoes = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
+            let formatada = d.toLocaleDateString('pt-BR', opcoes);
+            return formatada.toUpperCase();
+        }
+
+        // --- CORREÇÃO DO BOTÃO NOVO MEMBRO ---
         if (elBtnNovo) {
             elBtnNovo.onclick = (e) => {
-                e.preventDefault(); // Previne qualquer comportamento estranho
+                e.preventDefault();
                 const val = elCombo.value;
                 if (!val || val === "") {
                     alert("Selecione a sociedade primeiro.");
@@ -46,24 +59,20 @@
                 const infoAldeia = document.getElementById('modal-info-aldeia');
                 if (infoAldeia) infoAldeia.textContent = `${op.aldeia} - ${op.sociedade}`;
                 
-                // Força a exibição removendo hidden e garantindo flex
-                elModal.classList.remove('hidden');
-                elModal.classList.add('flex');
+                if (elModal) {
+                    elModal.classList.remove('hidden');
+                    elModal.classList.add('flex');
+                }
             };
         }
 
-        if (elModalFechar) {
+        if (elModalFechar && elModal) {
             elModalFechar.onclick = () => {
                 elModal.classList.add('hidden');
                 elModal.classList.remove('flex');
             };
         }
 
-        if (elBtnFecharAviso) {
-            elBtnFecharAviso.onclick = () => elModalAviso.classList.add('hidden');
-        }
-
-        // --- RESTANTE DA LÓGICA ---
         function atualizarBotaoSubmit() {
             if (!elEmail || !elBtn) return;
             const emailValido = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(elEmail.value);
@@ -148,7 +157,8 @@
         if (dataRes && dataRes.ok) {
             aldeiasMap = dataRes.data.aldeias;
             elData.value = dataRes.data.dataPadrao;
-            if (elDataDisplay) elDataDisplay.textContent = dataRes.data.dataPadrao; // Simplificado para teste
+            if (elDataDisplay) elDataDisplay.textContent = formatarDataLonga(dataRes.data.dataPadrao);
+            
             elCombo.innerHTML = '<option value="">SELECIONE A SOCIEDADE...</option>';
             let i = 0;
             for (let aldeia in aldeiasMap) {

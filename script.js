@@ -1,6 +1,6 @@
 /**
  * FRONT-END - Sociedade dos Guelfos
- * Lógica de cascata corrigida para o novo HTML
+ * Lógica de cascata, Modais e Novo Membro
  */
 
 const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwdIgOpTxJJRBX6SBEFqTP6wOo5SI5Ro5tsTTue_sLMGhzdncl-NyaS_fK2GmwKVO72/exec";
@@ -21,6 +21,10 @@ const inputEmail = document.getElementById('email');
 const wrapperEmail = document.getElementById('wrapper-email');
 const btnSubmit = document.getElementById('btn-submit');
 const dataDisplay = document.getElementById('data-display');
+
+// Modais
+const modalNovo = document.getElementById('modal-novo');
+const modalSucesso = document.getElementById('modal-sucesso');
 
 document.addEventListener('DOMContentLoaded', () => {
     carregarOpcoesIniciais();
@@ -57,46 +61,76 @@ function configurarEventos() {
     comboAldeia.addEventListener('change', () => {
         const aldeia = comboAldeia.value;
         resetarAbaixoDe('aldeia');
-
         if (aldeia) {
-            // Remove a trava visual e funcional
             wrapperSociedade.classList.remove('field-disabled');
             comboSociedade.disabled = false;
-            
             const sociedades = state.aldeiasMap[aldeia] || [];
-            sociedades.forEach(soc => {
-                comboSociedade.add(new Option(soc, soc));
-            });
+            sociedades.forEach(soc => comboSociedade.add(new Option(soc, soc)));
         }
     });
 
     // 2. Mudança de Sociedade -> Habilita Membros
-    comboSociedade.addEventListener('change', async () => {
+    comboSociedade.addEventListener('change', () => {
         const sociedade = comboSociedade.value;
         const aldeia = comboAldeia.value;
         resetarAbaixoDe('sociedade');
-
         if (sociedade) {
             cardMembros.classList.remove('hidden-section');
             buscarMembros(aldeia, sociedade);
         }
     });
 
-    // 3. Submissão
+    // 3. Abrir Modal Novo Membro
+    document.getElementById('btn-novo-membro').onclick = () => {
+        document.getElementById('modal-info-aldeia').innerText = `${comboAldeia.value} > ${comboSociedade.value}`;
+        document.getElementById('modal-nome').value = "";
+        modalNovo.classList.remove('hidden');
+        modalNovo.classList.add('flex');
+    };
+
+    // 4. Fechar Modal Novo Membro
+    document.getElementById('modal-novo-fechar').onclick = () => {
+        modalNovo.classList.add('hidden');
+        modalNovo.classList.remove('flex');
+    };
+
+    // 5. Cadastrar Novo Membro (Localmente para seleção)
+    document.getElementById('modal-btn-cadastrar').onclick = () => {
+        const nomeNovo = document.getElementById('modal-nome').value.trim().toUpperCase();
+        if (nomeNovo.length < 3) return;
+
+        state.membroSelecionado = nomeNovo;
+        
+        // Simula a seleção visual mesmo sem estar na lista carregada
+        const listUl = document.getElementById('lista-membros');
+        const li = document.createElement('li');
+        li.className = "px-4 py-3 cursor-pointer bg-gold/20 text-gold transition-colors text-sm uppercase flex justify-between items-center";
+        li.innerHTML = `<span>${nomeNovo} (NOVO)</span>`;
+        listUl.prepend(li); // Coloca no topo da lista
+
+        // Habilita campos finais
+        wrapperEmail.classList.remove('field-disabled');
+        inputEmail.disabled = false;
+        btnSubmit.disabled = false;
+        
+        // Fecha modal
+        document.getElementById('modal-novo-fechar').click();
+        inputEmail.focus();
+    };
+
+    // 6. Submissão do Formulário
     document.getElementById('form-chamada').addEventListener('submit', enviarPresenca);
 }
 
 async function buscarMembros(aldeia, sociedade) {
     const listWrap = document.getElementById('lista-membros');
     listWrap.innerHTML = '<li class="p-4 text-center text-xs text-gray-400">BUSCANDO...</li>';
-    
     try {
         const response = await fetch(WEB_APP_URL, {
             method: 'POST',
             body: JSON.stringify({ action: 'listMembers', aldeia, sociedade })
         });
         const result = await response.json();
-        
         if (result.ok) {
             state.membrosAtuais = result.data;
             renderizarMembros(state.membrosAtuais);
@@ -110,12 +144,10 @@ async function buscarMembros(aldeia, sociedade) {
 function renderizarMembros(lista) {
     const listUl = document.getElementById('lista-membros');
     listUl.innerHTML = '';
-    
     if (lista.length === 0) {
         document.getElementById('lista-membros-vazia').classList.remove('hidden');
         return;
     }
-
     document.getElementById('lista-membros-vazia').classList.add('hidden');
     lista.forEach(nome => {
         const li = document.createElement('li');
@@ -128,13 +160,12 @@ function renderizarMembros(lista) {
 
 function selecionarMembro(nome, elemento) {
     document.querySelectorAll('#lista-membros li').forEach(el => el.classList.remove('bg-gold/20', 'text-gold'));
-    elemento.classList.add('bg-gold/20', 'text-gold');
+    if (elemento) elemento.classList.add('bg-gold/20', 'text-gold');
     state.membroSelecionado = nome;
     
-    // Habilita o campo de Email (Passo Final)
     wrapperEmail.classList.remove('field-disabled');
     inputEmail.disabled = false;
-    btnSubmit.disabled = false; // Habilita o botão de confirmação
+    btnSubmit.disabled = false;
 }
 
 async function enviarPresenca(e) {
@@ -158,11 +189,12 @@ async function enviarPresenca(e) {
         });
         const res = await response.json();
         if (res.ok) {
-            alert("Presença confirmada!");
-            location.reload();
+            // MOSTRA MODAL DE SUCESSO
+            modalSucesso.classList.remove('hidden');
+            modalSucesso.classList.add('flex');
         }
     } catch (err) {
-        alert("Erro ao salvar.");
+        console.error(err);
         btnSubmit.disabled = false;
         document.getElementById('btn-label').innerText = "Confirmar presença";
     }
@@ -174,8 +206,6 @@ function resetarAbaixoDe(nivel) {
         comboSociedade.disabled = true;
         wrapperSociedade.classList.add('field-disabled');
     }
-    
-    // Esconde membros e desabilita email
     cardMembros.classList.add('hidden-section');
     state.membroSelecionado = null;
     inputEmail.value = "";
@@ -185,7 +215,6 @@ function resetarAbaixoDe(nivel) {
 }
 
 function resetarFormulario() {
-    // Garante que tudo comece bloqueado
     comboSociedade.disabled = true;
     inputEmail.disabled = true;
     btnSubmit.disabled = true;

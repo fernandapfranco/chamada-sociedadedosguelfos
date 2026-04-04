@@ -32,7 +32,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="style.css">
     <style>
-        /* Estilo para campos desabilitados que o Tailwind não cobre nativamente com opacidade total no grupo */
         .field-disabled {
             opacity: 0.4;
             pointer-events: none;
@@ -40,6 +39,15 @@
         }
         .hidden-section {
             display: none;
+        }
+        /* Garantir centralização perfeita das modais */
+        .modal-center {
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-center.active {
+            display: flex;
         }
     </style>
 </head>
@@ -155,8 +163,6 @@
                     </div>
                 </div>
 
-                <p id="msg-global" class="hidden rounded-2xl border px-4 py-3 text-sm font-sans"></p>
-
                 <button type="submit" id="btn-submit" disabled class="btn-submit-guelfo flex w-full items-center justify-center gap-2 rounded-2xl py-4 font-serif text-sm font-bold uppercase tracking-widest text-black shadow-lg disabled:opacity-30 disabled:cursor-not-allowed">
                     <span id="btn-label">Confirmar presença</span>
                 </button>
@@ -173,8 +179,23 @@
             </div>
             <div class="flex gap-2 mt-6">
                 <button type="button" id="modal-novo-fechar" class="flex-1 rounded-xl border border-white/20 py-3 text-xs text-white uppercase">Cancelar</button>
-                <button type="button" id="modal-btn-cadastrar" class="flex-1 rounded-xl bg-gold py-3 text-xs font-bold text-black uppercase">Salvar</button>
+                <button type="button" id="modal-btn-cadastrar" class="flex-1 rounded-xl bg-gold py-3 text-xs font-bold text-black uppercase hover:bg-gold-glow">Salvar</button>
             </div>
+        </div>
+    </div>
+
+    <div id="modal-sucesso" class="fixed inset-0 z-[70] hidden items-center justify-center bg-black/90 p-4 backdrop-blur-md">
+        <div class="card-glass w-full max-w-sm rounded-2xl border border-emerald-500/30 p-8 text-center shadow-2xl">
+            <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-emerald-900/20 text-emerald-500">
+                <svg class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                </svg>
+            </div>
+            <h2 class="font-serif text-gold uppercase text-xl mb-2">Presença Confirmada!</h2>
+            <p class="text-sm text-gray-400 uppercase tracking-widest mb-6 leading-relaxed">Sua jornada foi registrada com sucesso nos anais da Sociedade.</p>
+            <button type="button" onclick="location.reload()" class="w-full rounded-xl bg-gold py-3 text-xs font-bold text-black uppercase hover:bg-gold-glow transition-all">
+                Concluir
+            </button>
         </div>
     </div>
 
@@ -185,8 +206,8 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                 </svg>
             </div>
-            <h3 class="mb-2 font-serif text-white uppercase tracking-wider">Membro já cadastrado</h3>
-            <p id="aviso-texto" class="mb-6 text-xs text-gray-400 uppercase leading-relaxed"></p>
+            <h3 class="mb-2 font-serif text-white uppercase tracking-wider text-sm">Atenção</h3>
+            <p id="aviso-texto" class="mb-6 text-[11px] text-gray-400 uppercase leading-relaxed"></p>
             <button type="button" id="btn-fechar-aviso" class="w-full rounded-xl bg-white/10 py-3 text-[10px] font-bold text-white hover:bg-white/20 uppercase transition-all">
                 Entendido
             </button>

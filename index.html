@@ -38,16 +38,16 @@
         <div class="w-full max-w-md space-y-4" role="main">
             
             <header class="px-2 text-center pt-4 sm:pt-0">
-    <div class="flex items-center justify-center gap-2 sm:gap-3">
-        <h1 class="header-title font-serif text-[20px] leading-tight font-semibold uppercase tracking-[0.1em] text-gold xs:text-base sm:text-xl md:text-2xl whitespace-nowrap">
-            Sociedade dos Guelfos
-        </h1>
+                <div class="flex items-center justify-center gap-2 sm:gap-3">
+                    <h1 class="header-title font-serif text-[20px] leading-tight font-semibold uppercase tracking-[0.1em] text-gold xs:text-base sm:text-xl md:text-2xl whitespace-nowrap">
+                        Sociedade dos Guelfos
+                    </h1>
+                </div>
+                <p class="mt-2 font-sans text-[14px] font-medium uppercase tracking-[0.2em] text-gray-400 sm:text-xs">
+                    Sistema de chamada
+                </p>
+            </header>
 
-        </div>
-    <p class="mt-2 font-sans text-[14px] font-medium uppercase tracking-[0.2em] text-gray-400 sm:text-xs">
-        Sistema de chamada
-    </p>
-</header>
             <form id="form-chamada" class="space-y-4" novalidate>
                 <input type="hidden" id="data" name="data" value="" />
 
@@ -68,37 +68,38 @@
                     </div>
                 </div>
 
-<div class="card-glass rounded-2xl border p-4 shadow-card sm:p-5">
-    <div class="flex gap-4">
-        <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-amber-600/40 bg-black/40 text-gold">
-            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                <path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1h-5v-6H9v6H4a1 1 0 01-1-1V9.5z" />
-            </svg>
-        </div>
-        <div class="min-w-0 flex-1">
-            <label for="combo-aldeia" class="font-label-custom font-semibold uppercase tracking-widest text-gold">Aldeia</label>
-            <select id="combo-aldeia" class="mt-2 w-full cursor-pointer appearance-none rounded-xl border border-amber-600/50 bg-black/50 py-3 px-3 text-sm text-white focus:border-gold focus:outline-none">
-                <option value="">Selecione a aldeia</option>
-            </select>
-        </div>
-    </div>
-</div>
+                <div class="card-glass rounded-2xl border p-4 shadow-card sm:p-5">
+                    <div class="flex gap-4">
+                        <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-amber-600/40 bg-black/40 text-gold">
+                            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1h-5v-6H9v6H4a1 1 0 01-1-1V9.5z" />
+                            </svg>
+                        </div>
+                        <div class="min-w-0 flex-1">
+                            <label for="combo-aldeia" class="font-label-custom font-semibold uppercase tracking-widest text-gold">Aldeia</label>
+                            <select id="combo-aldeia" class="mt-2 w-full cursor-pointer appearance-none rounded-xl border border-amber-600/50 bg-black/50 py-3 px-3 text-sm text-white focus:border-gold focus:outline-none">
+                                <option value="">Selecione a aldeia</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
 
-<div id="wrapper-sociedade" class="card-glass rounded-2xl border p-4 shadow-card sm:p-5 opacity-50 pointer-events-none transition-all">
-    <div class="flex gap-4">
-        <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-amber-600/40 bg-black/40 text-gold">
-            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 7a4 4 0 014-4" />
-            </svg>
-        </div>
-        <div class="min-w-0 flex-1">
-            <label for="combo-sociedade" class="font-label-custom font-semibold uppercase tracking-widest text-gold">Sociedade</label>
-            <select id="combo-sociedade" class="mt-2 w-full cursor-pointer appearance-none rounded-xl border border-amber-600/50 bg-black/50 py-3 px-3 text-sm text-white focus:border-gold focus:outline-none">
-                <option value="">Selecione sociedade</option>
-            </select>
-        </div>
-    </div>
-</div>
+                <div id="wrapper-sociedade" class="card-glass rounded-2xl border p-4 shadow-card sm:p-5 opacity-50 pointer-events-none transition-all">
+                    <div class="flex gap-4">
+                        <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-amber-600/40 bg-black/40 text-gold">
+                            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 7a4 4 0 014-4" />
+                            </svg>
+                        </div>
+                        <div class="min-w-0 flex-1">
+                            <label for="combo-sociedade" class="font-label-custom font-semibold uppercase tracking-widest text-gold">Sociedade</label>
+                            <select id="combo-sociedade" class="mt-2 w-full cursor-pointer appearance-none rounded-xl border border-amber-600/50 bg-black/50 py-3 px-3 text-sm text-white focus:border-gold focus:outline-none">
+                                <option value="">Selecione sociedade</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
                 <div id="card-membros" class="card-glass hidden-section rounded-2xl border p-4 shadow-card sm:p-5 transition-all duration-300">
                     <div class="flex gap-4 mb-4">
                         <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-amber-600/40 bg-black/40 text-gold">
@@ -129,18 +130,19 @@
                 </div>
 
                 <div class="card-glass rounded-2xl border p-4 shadow-card sm:p-5">
-    <div class="flex gap-4">
-        <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-amber-600/40 bg-black/40 text-gold">
-            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z" />
-            </svg>
-        </div>
-        <div class="min-w-0 flex-1">
-            <label for="telefone" class="font-label-custom font-semibold uppercase tracking-widest text-gold">WhatsApp para confirmação</label>
-            <input type="tel" id="telefone" class="mt-2 w-full rounded-xl border border-amber-600/40 bg-black/50 px-4 py-3 text-sm text-white focus:border-gold outline-none" placeholder="51 999999999" required />
-        </div>
-    </div>
-</div>
+                    <div class="flex gap-4">
+                        <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-amber-600/40 bg-black/40 text-gold">
+                            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                                <polyline points="22,6 12,13 2,6" />
+                            </svg>
+                        </div>
+                        <div class="min-w-0 flex-1">
+                            <label for="email" class="font-label-custom font-semibold uppercase tracking-widest text-gold">E-mail para confirmação</label>
+                            <input type="email" id="email" class="mt-2 w-full rounded-xl border border-amber-600/40 bg-black/50 px-4 py-3 text-sm text-white focus:border-gold outline-none" placeholder="seu@email.com" required />
+                        </div>
+                    </div>
+                </div>
 
                 <p id="msg-global" class="hidden rounded-2xl border px-4 py-3 text-sm font-sans"></p>
 
@@ -151,23 +153,21 @@
         </div>
     </div>
 
-<div id="modal-novo" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 p-4 backdrop-blur-sm">
-    <div class="card-glass w-full max-w-sm rounded-2xl border border-gold/30 p-6 text-center">
-        <h2 id="modal-titulo" class="font-serif text-gold uppercase text-lg">Novo Membro</h2>
-        <p id="modal-info-aldeia" class="text-[10px] uppercase tracking-widest mb-4 text-gray-400">Carregando...</p>
-        
-        <div class="space-y-3">
-            <input type="text" id="modal-nome" class="w-full rounded-xl border border-gold/40 bg-black/60 p-3 text-white focus:border-gold outline-none text-center uppercase" placeholder="NOME COMPLETO" />
+    <div id="modal-novo" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 p-4 backdrop-blur-sm">
+        <div class="card-glass w-full max-w-sm rounded-2xl border border-gold/30 p-6 text-center">
+            <h2 id="modal-titulo" class="font-serif text-gold uppercase text-lg">Novo Membro</h2>
+            <p id="modal-info-aldeia" class="text-[10px] uppercase tracking-widest mb-4 text-gray-400">Carregando...</p>
             
-            <input type="tel" id="modal-telefone-novo" class="w-full rounded-xl border border-gold/40 bg-black/60 p-3 text-white focus:border-gold outline-none text-center" placeholder="WHATSAPP (DDD + NÚMERO)" />
-        </div>
-        
-        <div class="flex gap-2 mt-6">
-            <button type="button" id="modal-novo-fechar" class="flex-1 rounded-xl border border-white/20 py-3 text-xs text-white uppercase">Cancelar</button>
-            <button type="button" id="modal-btn-cadastrar" class="flex-1 rounded-xl bg-gold py-3 text-xs font-bold text-black uppercase">Salvar</button>
+            <div class="space-y-3">
+                <input type="text" id="modal-nome" class="w-full rounded-xl border border-gold/40 bg-black/60 p-3 text-white focus:border-gold outline-none text-center uppercase" placeholder="NOME COMPLETO" />
+            </div>
+            
+            <div class="flex gap-2 mt-6">
+                <button type="button" id="modal-novo-fechar" class="flex-1 rounded-xl border border-white/20 py-3 text-xs text-white uppercase">Cancelar</button>
+                <button type="button" id="modal-btn-cadastrar" class="flex-1 rounded-xl bg-gold py-3 text-xs font-bold text-black uppercase">Salvar</button>
+            </div>
         </div>
     </div>
-</div>
 
     <div id="modal-aviso" class="fixed inset-0 z-[60] hidden items-center justify-center bg-black/40 p-4 backdrop-blur-sm">
         <div class="card-glass w-full max-w-xs rounded-2xl border border-red-500/50 p-6 text-center shadow-2xl">

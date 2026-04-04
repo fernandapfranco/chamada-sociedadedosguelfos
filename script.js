@@ -1,25 +1,25 @@
 (function () {
-    // RESOLUÇÃO DE URL: Se o Vercel falhar, ele usa a sua URL direta
+    // RESOLUÇÃO DE URL: Use a sua URL de produção ou preview aqui
     let SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwdIgOpTxJJRBX6SBEFqTP6wOo5SI5Ro5tsTTue_sLMGhzdncl-NyaS_fK2GmwKVO72/exec"; 
+    
     try {
         if (import.meta.env && import.meta.env.VITE_SCRIPT_URL) {
             SCRIPT_URL = import.meta.env.VITE_SCRIPT_URL;
         }
-    } catch (e) { console.log("Usando URL de fallback"); }
+    } catch (e) {}
 
     var aldeiasMap = {};
     var membrosLista = [];
     var nomeSelecionado = '';
 
-    // Elementos
     const elComboAldeia = document.getElementById('combo-aldeia');
     const elComboSociedade = document.getElementById('combo-sociedade');
     const elTelefone = document.getElementById('telefone');
     const elBtn = document.getElementById('btn-submit');
     const elCardMembros = document.getElementById('card-membros');
     const elLista = document.getElementById('lista-membros');
+    const elDataDisplay = document.getElementById('data-display');
 
-    // --- TRAVAS RÍGIDAS (PONTO CENTRAL DA SUA SOLICITAÇÃO) ---
     function aplicarTravas() {
         const aldeiaOk = elComboAldeia.value !== "";
         const socOk = elComboSociedade.value !== "";
@@ -27,28 +27,28 @@
         const telLimpo = elTelefone.value.replace(/\D/g, '');
         const telOk = telLimpo.length >= 10;
 
-        // 1. Sociedade só habilita se tiver Aldeia
+        // Desbloqueio em cascata
         elComboSociedade.disabled = !aldeiaOk;
         
-        // 2. WhatsApp só habilita se tiver Membro Selecionado
+        // Só habilita o campo de WhatsApp se o nome estiver selecionado
         elTelefone.disabled = !nomeOk;
-        
-        // 3. Botão só habilita se TUDO estiver preenchido
+        elTelefone.parentElement.style.opacity = elTelefone.disabled ? "0.5" : "1";
+
+        // Botão de confirmação só libera com TUDO preenchido
         elBtn.disabled = !(aldeiaOk && socOk && nomeOk && telOk);
         elBtn.style.opacity = elBtn.disabled ? "0.5" : "1";
-
-        // Estética para feedback visual
-        elTelefone.parentElement.style.opacity = elTelefone.disabled ? "0.5" : "1";
     }
 
-    // Eventos de Mudança
+    // Inicialização do estado
+    aplicarTravas();
+
     elComboAldeia.onchange = () => {
         const aldeiaSel = elComboAldeia.value;
         elComboSociedade.innerHTML = '<option value="">SELECIONE SOCIEDADE</option>';
         if (aldeiaSel && aldeiasMap[aldeiaSel]) {
             aldeiasMap[aldeiaSel].forEach(s => elComboSociedade.add(new Option(s, s)));
         }
-        nomeSelecionado = ''; 
+        nomeSelecionado = '';
         elCardMembros.classList.add('hidden-section');
         aplicarTravas();
     };
@@ -56,7 +56,7 @@
     elComboSociedade.onchange = async () => {
         if (!elComboSociedade.value) return;
         elCardMembros.classList.remove('hidden-section');
-        elLista.innerHTML = '<p class="p-4 text-center text-xs">Buscando membros...</p>';
+        elLista.innerHTML = '<p class="p-4 text-center text-xs">Carregando membros...</p>';
         
         const lista = await chamarGoogle({ 
             action: 'listMembers', 
@@ -68,8 +68,6 @@
         aplicarTravas();
     };
 
-    elTelefone.oninput = aplicarTravas;
-
     function renderLista() {
         elLista.innerHTML = '';
         membrosLista.forEach(nome => {
@@ -80,13 +78,14 @@
             li.onclick = () => {
                 nomeSelecionado = nome;
                 renderLista();
-                aplicarTravas(); // Libera o campo de WhatsApp
+                aplicarTravas(); // Desbloqueia o WhatsApp
             };
             elLista.appendChild(li);
         });
     }
 
-    // ENVIO E WHATSAPP (SEU NÚMERO BUSINESS)
+    elTelefone.oninput = aplicarTravas;
+
     document.getElementById('form-chamada').onsubmit = async (e) => {
         e.preventDefault();
         elBtn.disabled = true;
@@ -101,11 +100,8 @@
         });
 
         if (res.ok) {
-            // WHATSAPP: Abre o chat da pessoa com a mensagem vinda do seu Business
             const telDestino = "55" + elTelefone.value.replace(/\D/g, '');
-            const msg = `Salve Maria! Presença de *${nomeSelecionado}* confirmada na *${elComboSociedade.value}*.`;
-            
-            // Abre o WhatsApp da pessoa para ela receber a mensagem do seu número que está logado
+            const msg = `Salve Maria! Presença confirmada para *${nomeSelecionado}* na *${elComboSociedade.value}*.`;
             window.open(`https://wa.me/${telDestino}?text=${encodeURIComponent(msg)}`, '_blank');
             location.reload();
         } else {
@@ -120,15 +116,13 @@
         return res.ok ? res.data : { ok: false, error: res.error };
     }
 
-    // Inicialização do App
     (async () => {
         const data = await chamarGoogle({ action: 'getOptions' });
         if (data && data.aldeias) {
             aldeiasMap = data.aldeias;
+            elDataDisplay.textContent = data.dataPadrao;
             elComboAldeia.innerHTML = '<option value="">SELECIONE A ALDEIA</option>';
-            for (let a in aldeiasMap) {
-                elComboAldeia.add(new Option(a, a));
-            }
+            for (let a in aldeiasMap) elComboAldeia.add(new Option(a, a));
             aplicarTravas();
         }
     })();

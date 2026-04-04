@@ -1,5 +1,5 @@
 (function () {
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxWRUJ_AIoTarEVM9U9Q3Voxnu-BO-ltuhQfA2V0wCv7JeF_DvAmQobpveuWje5UAdo/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz5TYgDdDlM11DyFSU4aZXi5QDQ2XxezU-qU1SqvRasrdQMq3lLT6rm-IDnY-k-67bY/exec";
 
     var aldeiasMap = {};
     var opcoesCombo = [];
@@ -22,6 +22,11 @@
         const elModalFechar = document.getElementById('modal-novo-fechar');
         const elModalNome = document.getElementById('modal-nome');
         const elModalCadastrar = document.getElementById('modal-btn-cadastrar');
+        
+        // Elementos do Modal de Aviso
+        const elModalAviso = document.getElementById('modal-aviso');
+        const elAvisoTexto = document.getElementById('aviso-texto');
+        const elBtnFecharAviso = document.getElementById('btn-fechar-aviso');
 
         async function chamarGoogle(payload) {
             try {
@@ -29,6 +34,17 @@
                 return await response.json();
             } catch (e) { return { ok: false, error: "Erro de conexão." }; }
         }
+
+        function mostrarAviso(msg) {
+            if (elAvisoTexto && elModalAviso) {
+                elAvisoTexto.textContent = msg.toUpperCase();
+                elModalAviso.classList.replace('hidden', 'flex');
+            } else {
+                alert(msg); // Fallback caso o elemento suma
+            }
+        }
+
+        if (elBtnFecharAviso) elBtnFecharAviso.onclick = () => elModalAviso.classList.replace('flex', 'hidden');
 
         function formatarDataLonga(dataStr) {
             if (!dataStr) return '...';
@@ -40,8 +56,8 @@
         if (elBtnNovo) {
             elBtnNovo.onclick = (e) => {
                 e.preventDefault();
+                if (!elCombo.value) return mostrarAviso("Selecione a sociedade primeiro");
                 const op = opcoesCombo[elCombo.value];
-                if (!op) return alert("Selecione a sociedade.");
                 document.getElementById('modal-info-aldeia').textContent = `${op.aldeia} - ${op.sociedade}`;
                 elModal.classList.replace('hidden', 'flex');
             };
@@ -66,20 +82,17 @@
                 li.onclick = () => { nomeSelecionado = isSel ? '' : nome; renderLista(); atualizarBotaoSubmit(); };
                 elLista.appendChild(li);
             });
-            const badge = document.getElementById('badge-membros');
-            if (badge) badge.textContent = membrosLista.length;
+            document.getElementById('badge-membros').textContent = membrosLista.length;
         }
 
         elCombo.onchange = async () => {
-            const val = elCombo.value;
-            if (!val) return elCardMembros.classList.add('hidden-section');
+            if (!elCombo.value) return elCardMembros.classList.add('hidden-section');
             elCardMembros.classList.remove('hidden-section');
-            elLista.innerHTML = '<p class="p-4 text-center text-xs text-gray-400 uppercase">Buscando lista...</p>';
-            const op = opcoesCombo[val];
+            elLista.innerHTML = '<p class="p-4 text-center text-xs text-gray-400">BUSCANDO...</p>';
+            const op = opcoesCombo[elCombo.value];
             const res = await chamarGoogle({ action: 'listMembers', aldeia: op.aldeia, sociedade: op.sociedade });
             membrosLista = res.ok ? res.data : [];
             renderLista();
-            atualizarBotaoSubmit();
         };
 
         elEmail.oninput = atualizarBotaoSubmit;
@@ -88,16 +101,16 @@
         elModalCadastrar.onclick = async () => {
             const nome = elModalNome.value.trim();
             const op = opcoesCombo[elCombo.value];
-            if (nome.length < 3) return alert("Nome muito curto.");
+            if (nome.length < 3) return mostrarAviso("Nome muito curto");
             elModalCadastrar.disabled = true;
             const res = await chamarGoogle({ action: 'addMember', nome, aldeia: op.aldeia, sociedade: op.sociedade });
             if (res.ok) {
                 elModal.classList.replace('flex', 'hidden');
                 elModalNome.value = '';
-                nomeSelecionado = nome; // Seleciona automaticamente
-                elCombo.onchange(); // Recarrega a lista
+                nomeSelecionado = nome;
+                elCombo.onchange();
             } else {
-                alert(res.error); // Exibe o erro de Unicidade Global
+                mostrarAviso(res.error); 
             }
             elModalCadastrar.disabled = false;
         };
@@ -118,21 +131,18 @@
             });
 
             if (res.ok) {
-                // TELA DE SUCESSO PADRÃO NO LUGAR DO FORM
                 document.querySelector('.page-wrap .w-full').innerHTML = `
-                    <div class="card-glass rounded-2xl border border-emerald-500/50 p-8 text-center shadow-card">
+                    <div class="card-glass rounded-2xl border border-emerald-500/50 p-8 text-center shadow-card animate-in zoom-in duration-300">
                         <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-emerald-900/30 text-emerald-500">
                             <svg class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                             </svg>
                         </div>
                         <h2 class="font-serif text-xl text-white uppercase tracking-widest mb-2">Presença Confirmada</h2>
-                        <p class="text-sm text-gray-400 uppercase tracking-tighter">Obrigado. Sua honra foi registrada.</p>
-                        <button onclick="window.location.reload()" class="mt-8 px-6 py-2 rounded-xl bg-gold text-black text-[10px] font-bold uppercase tracking-widest hover:bg-gold-glow">Fazer nova chamada</button>
                     </div>
                 `;
             } else {
-                alert(res.error);
+                mostrarAviso(res.error);
                 elBtn.disabled = false;
                 elBtnLabel.textContent = 'CONFIRMAR PRESENÇA';
             }

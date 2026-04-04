@@ -1,5 +1,4 @@
 (function () {
-    // RESOLUÇÃO DE URL: Use a sua URL de produção ou preview aqui
     let SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwdIgOpTxJJRBX6SBEFqTP6wOo5SI5Ro5tsTTue_sLMGhzdncl-NyaS_fK2GmwKVO72/exec"; 
     
     try {
@@ -14,33 +13,32 @@
 
     const elComboAldeia = document.getElementById('combo-aldeia');
     const elComboSociedade = document.getElementById('combo-sociedade');
-    const elTelefone = document.getElementById('telefone');
+    const elEmail = document.getElementById('email'); // Voltamos para o e-mail
     const elBtn = document.getElementById('btn-submit');
     const elCardMembros = document.getElementById('card-membros');
     const elLista = document.getElementById('lista-membros');
     const elDataDisplay = document.getElementById('data-display');
 
-    function aplicarTravas() {
-        const aldeiaOk = elComboAldeia.value !== "";
-        const socOk = elComboSociedade.value !== "";
-        const nomeOk = nomeSelecionado !== "";
-        const telLimpo = elTelefone.value.replace(/\D/g, '');
-        const telOk = telLimpo.length >= 10;
-
-        // Desbloqueio em cascata
-        elComboSociedade.disabled = !aldeiaOk;
-        
-        // Só habilita o campo de WhatsApp se o nome estiver selecionado
-        elTelefone.disabled = !nomeOk;
-        elTelefone.parentElement.style.opacity = elTelefone.disabled ? "0.5" : "1";
-
-        // Botão de confirmação só libera com TUDO preenchido
-        elBtn.disabled = !(aldeiaOk && socOk && nomeOk && telOk);
-        elBtn.style.opacity = elBtn.disabled ? "0.5" : "1";
+    function formatarDataLonga(dataStr) {
+        if (!dataStr) return "Carregando...";
+        const partes = dataStr.split('/');
+        const data = new Date(partes[2], partes[1] - 1, partes[2]);
+        const opcoes = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
+        let formatada = data.toLocaleDateString('pt-BR', opcoes);
+        return formatada.charAt(0).toUpperCase() + formatada.slice(1);
     }
 
-    // Inicialização do estado
-    aplicarTravas();
+    function atualizarTravas() {
+        // Libera Sociedade se Aldeia estiver OK
+        elComboSociedade.disabled = !elComboAldeia.value;
+        
+        // Validação de E-mail simples
+        const emailValido = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(elEmail.value);
+        
+        // Habilita botão se tiver Nome + E-mail válido
+        elBtn.disabled = !(nomeSelecionado && emailValido);
+        elBtn.style.opacity = elBtn.disabled ? "0.5" : "1";
+    }
 
     elComboAldeia.onchange = () => {
         const aldeiaSel = elComboAldeia.value;
@@ -50,22 +48,26 @@
         }
         nomeSelecionado = '';
         elCardMembros.classList.add('hidden-section');
-        aplicarTravas();
+        atualizarTravas();
     };
 
     elComboSociedade.onchange = async () => {
         if (!elComboSociedade.value) return;
         elCardMembros.classList.remove('hidden-section');
-        elLista.innerHTML = '<p class="p-4 text-center text-xs">Carregando membros...</p>';
+        elLista.innerHTML = '<p class="p-4 text-center text-xs">Buscando membros...</p>';
         
-        const lista = await chamarGoogle({ 
-            action: 'listMembers', 
-            aldeia: elComboAldeia.value, 
-            sociedade: elComboSociedade.value 
+        const res = await fetch(SCRIPT_URL, {
+            method: 'POST',
+            body: JSON.stringify({ 
+                action: 'listMembers', 
+                aldeia: elComboAldeia.value, 
+                sociedade: elComboSociedade.value 
+            })
         });
-        membrosLista = Array.isArray(lista) ? lista : [];
+        const data = await res.json();
+        membrosLista = Array.isArray(data.data) ? data.data : [];
         renderLista();
-        aplicarTravas();
+        atualizarTravas();
     };
 
     function renderLista() {
@@ -78,52 +80,50 @@
             li.onclick = () => {
                 nomeSelecionado = nome;
                 renderLista();
-                aplicarTravas(); // Desbloqueia o WhatsApp
+                atualizarTravas();
             };
             elLista.appendChild(li);
         });
     }
 
-    elTelefone.oninput = aplicarTravas;
+    elEmail.oninput = atualizarTravas;
 
     document.getElementById('form-chamada').onsubmit = async (e) => {
         e.preventDefault();
         elBtn.disabled = true;
         elBtn.textContent = "REGISTRANDO...";
 
-        const res = await chamarGoogle({
-            action: 'saveAttendance',
-            aldeia: elComboAldeia.value,
-            sociedade: elComboSociedade.value,
-            nome: nomeSelecionado,
-            telefone: elTelefone.value
+        const response = await fetch(SCRIPT_URL, {
+            method: 'POST',
+            body: JSON.stringify({
+                action: 'saveAttendance',
+                aldeia: elComboAldeia.value,
+                sociedade: elComboSociedade.value,
+                nome: nomeSelecionado,
+                email: elEmail.value
+            })
         });
+        const res = await response.json();
 
         if (res.ok) {
-            const telDestino = "55" + elTelefone.value.replace(/\D/g, '');
-            const msg = `Salve Maria! Presença confirmada para *${nomeSelecionado}* na *${elComboSociedade.value}*.`;
-            window.open(`https://wa.me/${telDestino}?text=${encodeURIComponent(msg)}`, '_blank');
+            alert("Presença confirmada!");
             location.reload();
         } else {
-            alert("Erro: " + res.error);
+            alert("Erro ao gravar");
             elBtn.disabled = false;
         }
     };
 
-    async function chamarGoogle(payload) {
-        const r = await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload) });
-        const res = await r.json();
-        return res.ok ? res.data : { ok: false, error: res.error };
-    }
-
+    // Inicialização
     (async () => {
-        const data = await chamarGoogle({ action: 'getOptions' });
-        if (data && data.aldeias) {
-            aldeiasMap = data.aldeias;
-            elDataDisplay.textContent = data.dataPadrao;
+        const response = await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: 'getOptions' }) });
+        const res = await response.json();
+        if (res.ok) {
+            aldeiasMap = res.data.aldeias;
+            elDataDisplay.textContent = formatarDataLonga(res.data.dataPadrao);
             elComboAldeia.innerHTML = '<option value="">SELECIONE A ALDEIA</option>';
             for (let a in aldeiasMap) elComboAldeia.add(new Option(a, a));
-            aplicarTravas();
+            atualizarTravas();
         }
     })();
 })();

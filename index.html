@@ -31,6 +31,17 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="style.css">
+    <style>
+        /* Estilo para campos desabilitados que o Tailwind não cobre nativamente com opacidade total no grupo */
+        .field-disabled {
+            opacity: 0.4;
+            pointer-events: none;
+            filter: grayscale(0.5);
+        }
+        .hidden-section {
+            display: none;
+        }
+    </style>
 </head>
 <body class="min-h-screen font-sans antialiased text-white">
     <div class="page-wrap flex min-h-screen flex-col items-center justify-start p-4 pb-10 sm:justify-center sm:p-6">
@@ -68,7 +79,7 @@
                     </div>
                 </div>
 
-                <div class="card-glass rounded-2xl border p-4 shadow-card sm:p-5">
+                <div id="wrapper-aldeia" class="card-glass rounded-2xl border p-4 shadow-card sm:p-5">
                     <div class="flex gap-4">
                         <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-amber-600/40 bg-black/40 text-gold">
                             <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
@@ -84,7 +95,7 @@
                     </div>
                 </div>
 
-                <div id="wrapper-sociedade" class="card-glass rounded-2xl border p-4 shadow-card sm:p-5 opacity-50 pointer-events-none transition-all">
+                <div id="wrapper-sociedade" class="card-glass field-disabled rounded-2xl border p-4 shadow-card sm:p-5 transition-all">
                     <div class="flex gap-4">
                         <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-amber-600/40 bg-black/40 text-gold">
                             <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
@@ -93,7 +104,7 @@
                         </div>
                         <div class="min-w-0 flex-1">
                             <label for="combo-sociedade" class="font-label-custom font-semibold uppercase tracking-widest text-gold">Sociedade</label>
-                            <select id="combo-sociedade" class="mt-2 w-full cursor-pointer appearance-none rounded-xl border border-amber-600/50 bg-black/50 py-3 px-3 text-sm text-white focus:border-gold focus:outline-none">
+                            <select id="combo-sociedade" disabled class="mt-2 w-full cursor-pointer appearance-none rounded-xl border border-amber-600/50 bg-black/50 py-3 px-3 text-sm text-white focus:border-gold focus:outline-none disabled:cursor-not-allowed">
                                 <option value="">Selecione sociedade</option>
                             </select>
                         </div>
@@ -129,7 +140,7 @@
                     </div>
                 </div>
 
-                <div class="card-glass rounded-2xl border p-4 shadow-card sm:p-5">
+                <div id="wrapper-email" class="card-glass field-disabled rounded-2xl border p-4 shadow-card sm:p-5 transition-all">
                     <div class="flex gap-4">
                         <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-amber-600/40 bg-black/40 text-gold">
                             <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
@@ -139,14 +150,14 @@
                         </div>
                         <div class="min-w-0 flex-1">
                             <label for="email" class="font-label-custom font-semibold uppercase tracking-widest text-gold">E-mail para confirmação</label>
-                            <input type="email" id="email" class="mt-2 w-full rounded-xl border border-amber-600/40 bg-black/50 px-4 py-3 text-sm text-white focus:border-gold outline-none" placeholder="seu@email.com" required />
+                            <input type="email" id="email" disabled class="mt-2 w-full rounded-xl border border-amber-600/40 bg-black/50 px-4 py-3 text-sm text-white focus:border-gold outline-none disabled:cursor-not-allowed" placeholder="seu@email.com" required />
                         </div>
                     </div>
                 </div>
 
                 <p id="msg-global" class="hidden rounded-2xl border px-4 py-3 text-sm font-sans"></p>
 
-                <button type="submit" id="btn-submit" class="btn-submit-guelfo flex w-full items-center justify-center gap-2 rounded-2xl py-4 font-serif text-sm font-bold uppercase tracking-widest text-black shadow-lg disabled:opacity-50">
+                <button type="submit" id="btn-submit" disabled class="btn-submit-guelfo flex w-full items-center justify-center gap-2 rounded-2xl py-4 font-serif text-sm font-bold uppercase tracking-widest text-black shadow-lg disabled:opacity-30 disabled:cursor-not-allowed">
                     <span id="btn-label">Confirmar presença</span>
                 </button>
             </form>
@@ -157,11 +168,9 @@
         <div class="card-glass w-full max-w-sm rounded-2xl border border-gold/30 p-6 text-center">
             <h2 id="modal-titulo" class="font-serif text-gold uppercase text-lg">Novo Membro</h2>
             <p id="modal-info-aldeia" class="text-[10px] uppercase tracking-widest mb-4 text-gray-400">Carregando...</p>
-            
             <div class="space-y-3">
                 <input type="text" id="modal-nome" class="w-full rounded-xl border border-gold/40 bg-black/60 p-3 text-white focus:border-gold outline-none text-center uppercase" placeholder="NOME COMPLETO" />
             </div>
-            
             <div class="flex gap-2 mt-6">
                 <button type="button" id="modal-novo-fechar" class="flex-1 rounded-xl border border-white/20 py-3 text-xs text-white uppercase">Cancelar</button>
                 <button type="button" id="modal-btn-cadastrar" class="flex-1 rounded-xl bg-gold py-3 text-xs font-bold text-black uppercase">Salvar</button>

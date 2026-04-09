@@ -1,5 +1,5 @@
 (function () {
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxgKYaqN0L4cqB7iqhvrenIpDH3pT9TV64W-ZK92jmmFkAbDePuEWyWSdI72mGzXBhF/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby_bhw6it2nUqDLxpAsWAMtKADobtZdDTJoe1OvXmB4zUnnAcvKmcHacgtysZ3pAdGN/exec";
 
     var aldeiasMap = {};
     var opcoesCombo = [];
@@ -53,7 +53,7 @@
             };
         }
 
-        document.getElementById('modal-novo-fechar').onclick = () => elModal.classList.replace('flex', 'hidden');
+        document.getElementById('modal-novo-fechar').onclick = () => elModal.classList.replace('hidden', 'flex');
 
         function atualizarBotaoSubmit() {
             const emailValido = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(elEmail.value);
@@ -109,18 +109,25 @@
             elBtn.disabled = true;
             elBtnLabel.textContent = 'ENVIANDO...';
             const res = await chamarGoogle({ action: 'saveAttendance', data: elData.value, aldeia: op.aldeia, sociedade: op.sociedade, nome: nomeSelecionado, email: elEmail.value });
+            
             if (res.ok) {
+                // Tela de sucesso simplificada conforme solicitado
                 document.querySelector('.page-wrap .w-full').innerHTML = `
                     <div class="card-glass rounded-2xl border border-emerald-500/50 p-8 text-center shadow-card">
                         <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-emerald-900/30 text-emerald-500">
-                            <svg class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M5 13l4 4L19 7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            <svg class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                            </svg>
                         </div>
-                        <h2 class="font-serif text-xl text-white uppercase mb-2">Presença Confirmada</h2>
-                        <p class="text-sm text-gray-400 uppercase">Sua honra foi registrada para ${elData.value}.</p>
-                        <button onclick="window.location.reload()" class="mt-8 px-6 py-2 rounded-xl bg-gold text-black text-[10px] font-bold uppercase tracking-widest">Nova Chamada</button>
+                        <h2 class="font-serif text-xl text-white uppercase tracking-widest mb-2">Presença Confirmada</h2>
+                        <p class="text-sm text-gray-400 uppercase tracking-tighter">Sua honra foi registrada.</p>
                     </div>
                 `;
-            } else { mostrarAviso(res.error); elBtn.disabled = false; elBtnLabel.textContent = 'CONFIRMAR'; }
+            } else { 
+                mostrarAviso(res.error); 
+                elBtn.disabled = false; 
+                elBtnLabel.textContent = 'CONFIRMAR PRESENÇA'; 
+            }
         };
 
         const res = await chamarGoogle({ action: 'getOptions' });

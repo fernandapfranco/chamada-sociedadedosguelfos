@@ -88,20 +88,23 @@
         elEmail.oninput = atualizarBotaoSubmit;
         elBusca.oninput = renderLista;
 
-        elModalCadastrar.onclick = async () => {
-            const nome = elModalNome.value.trim();
-            if (nome.split(' ').length < 2) return mostrarAviso("Informe nome e sobrenome");
-            elModalCadastrar.disabled = true;
-            const op = opcoesCombo[elCombo.value];
-            const res = await chamarGoogle({ action: 'addMember', nome, aldeia: op.aldeia, sociedade: op.sociedade });
-            if (res.ok) {
-                elModal.classList.replace('flex', 'hidden');
-                elModalNome.value = '';
-                nomeSelecionado = nome;
-                elCombo.onchange();
-            } else { mostrarAviso(res.error); }
-            elModalCadastrar.disabled = false;
-        };
+// No seu script.js (Front-end)
+elModalCadastrar.onclick = () => {
+    const nomeDigitado = elModalNome.value.trim();
+    if (nomeDigitado.split(' ').length < 2) return mostrarAviso("Informe nome e sobrenome");
+    
+    // IMPORTANTE: Aqui NÃO chamamos o Google.
+    // Apenas inserimos o nome na lista visual do site para o usuário selecionar.
+    if (!membrosLista.includes(nomeDigitado)) {
+        membrosLista.push(nomeDigitado);
+    }
+    nomeSelecionado = nomeDigitado;
+    
+    elModal.classList.replace('flex', 'hidden');
+    elModalNome.value = '';
+    renderLista(); // Atualiza a lista na tela
+    atualizarBotaoSubmit(); // Libera o botão de confirmar presença
+};
 
         elForm.onsubmit = async (e) => {
             e.preventDefault();

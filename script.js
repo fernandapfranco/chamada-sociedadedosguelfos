@@ -1,5 +1,5 @@
 (function () {
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyi186dFQeHjtAmilrErptTnzQe1BaELpvzGMfJu_JwhWBsiS3IuvdYKvRfSjFx2PjF/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzmi4ahMNUk56Am6RILB5_GA1MLrWoMnN5UqtfNOyUqnNZ-CVeS5MVR_dgq5-afzAcS/exec";
 
     var aldeiasMap = {};
     var opcoesCombo = [];
@@ -19,7 +19,7 @@
         const elBtn = document.getElementById('btn-submit');
         const elBtnLabel = document.getElementById('btn-label');
         const elModal = document.getElementById('modal-novo');
-        const elModalInfo = document.getElementById('modal-info-aldeia'); // Texto da sociedade no modal
+        const elModalInfo = document.getElementById('modal-info-aldeia');
         const elModalNome = document.getElementById('modal-nome');
         const elModalCadastrar = document.getElementById('modal-btn-cadastrar');
         const elModalAviso = document.getElementById('modal-aviso');
@@ -38,7 +38,6 @@
             elModalAviso.classList.replace('hidden', 'flex');
         }
 
-        // Normalização para comparação de nomes (remove acentos e espaços)
         function normalizarTexto(t) {
             return t.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, " ").trim().toLowerCase();
         }
@@ -56,11 +55,8 @@
             elBtnNovo.onclick = (e) => {
                 e.preventDefault();
                 if (!elCombo.value) return mostrarAviso("Selecione a sociedade primeiro");
-                
-                // Exibe a sociedade atual no modal
                 const op = opcoesCombo[elCombo.value];
                 if (elModalInfo) elModalInfo.textContent = `${op.aldeia} — ${op.sociedade}`;
-                
                 elModal.classList.replace('hidden', 'flex');
             };
         }
@@ -75,7 +71,6 @@
         function renderLista() {
             var q = normalizarTexto(elBusca.value);
             var filtrados = membrosLista.filter(n => !q || normalizarTexto(n).includes(q));
-            
             elLista.innerHTML = '';
             filtrados.forEach(nome => {
                 const isSel = (nome === nomeSelecionado);
@@ -96,8 +91,7 @@
             const val = elCombo.value;
             if (!val) return elCardMembros.classList.add('hidden-section');
             elCardMembros.classList.remove('hidden-section');
-            elLista.innerHTML = '<p class="p-4 text-center text-xs text-gray-400 uppercase">Buscando lista...</p>';
-            
+            elLista.innerHTML = '<p class="p-4 text-center text-xs text-gray-400 uppercase tracking-widest">Buscando...</p>';
             const op = opcoesCombo[val];
             const res = await chamarGoogle({ action: 'listMembers', aldeia: op.aldeia, sociedade: op.sociedade });
             membrosLista = res.ok ? res.data : [];
@@ -109,30 +103,32 @@
         elEmail.oninput = atualizarBotaoSubmit;
         elBusca.oninput = renderLista;
 
-        // Cadastro Visual de Novo Membro
-elModalCadastrar.onclick = () => {
-    const nomeNovo = elModalNome.value.trim();
-    if (nomeNovo.split(' ').length < 2) return mostrarAviso("Informe nome e sobrenome.");
+        // Inclusão com Validação em Tempo Real
+        elModalCadastrar.onclick = async () => {
+            const nomeNovo = elModalNome.value.trim();
+            if (nomeNovo.split(' ').length < 2) return mostrarAviso("Informe nome e sobrenome.");
 
-    // Validação de similaridade na lista da tela
-    const nomeNorm = nomeNovo.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-    
-    const similarNaLista = membrosLista.some(m => {
-        const mNorm = m.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-        return mNorm.includes(nomeNorm) || nomeNorm.includes(mNorm);
-    });
+            elModalCadastrar.disabled = true;
+            elModalCadastrar.textContent = "VALIDANDO...";
 
-    if (similarNaLista) {
-        return mostrarAviso("UM MEMBRO SIMILAR JÁ EXISTE NESTA SOCIEDADE. SELECIONE-O NA LISTA.");
-    }
+            const res = await chamarGoogle({ action: 'checkMember', nome: nomeNovo });
 
-    membrosLista.push(nomeNovo);
-    nomeSelecionado = nomeNovo;
-    elModal.classList.replace('hidden', 'flex');
-    elModalNome.value = '';
-    renderLista();
-    atualizarBotaoSubmit();
-};
+            if (res.ok) {
+                if (!membrosLista.includes(nomeNovo)) {
+                    membrosLista.push(nomeNovo);
+                }
+                nomeSelecionado = nomeNovo;
+                elModal.classList.replace('hidden', 'flex');
+                elModalNome.value = '';
+                renderLista();
+                atualizarBotaoSubmit();
+            } else {
+                mostrarAviso(res.error);
+            }
+
+            elModalCadastrar.disabled = false;
+            elModalCadastrar.textContent = "SALVAR";
+        };
 
         elForm.onsubmit = async (e) => {
             e.preventDefault();
@@ -153,9 +149,7 @@ elModalCadastrar.onclick = () => {
                 document.querySelector('.page-wrap .w-full').innerHTML = `
                     <div class="card-glass rounded-2xl border border-emerald-500/50 p-8 text-center shadow-card animate-in zoom-in duration-300">
                         <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-emerald-900/30 text-emerald-500">
-                            <svg class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                            </svg>
+                            <svg class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
                         </div>
                         <h2 class="font-serif text-xl text-white uppercase tracking-widest mb-2">Presença Confirmada</h2>
                         <p class="text-sm text-gray-400 uppercase tracking-tighter">Não por nós, mas pela Glória do Seu Nome.</p>
@@ -168,7 +162,6 @@ elModalCadastrar.onclick = () => {
             }
         };
 
-        // Carga inicial
         const resInit = await chamarGoogle({ action: 'getOptions' });
         if (resInit.ok) {
             aldeiasMap = resInit.data.aldeias;

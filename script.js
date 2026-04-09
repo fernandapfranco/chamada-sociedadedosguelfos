@@ -19,11 +19,8 @@
         const elBtn = document.getElementById('btn-submit');
         const elBtnLabel = document.getElementById('btn-label');
         const elModal = document.getElementById('modal-novo');
-        const elModalFechar = document.getElementById('modal-novo-fechar');
         const elModalNome = document.getElementById('modal-nome');
         const elModalCadastrar = document.getElementById('modal-btn-cadastrar');
-        
-        // Elementos do Modal de Aviso
         const elModalAviso = document.getElementById('modal-aviso');
         const elAvisoTexto = document.getElementById('aviso-texto');
         const elBtnFecharAviso = document.getElementById('btn-fechar-aviso');
@@ -36,18 +33,13 @@
         }
 
         function mostrarAviso(msg) {
-            if (elAvisoTexto && elModalAviso) {
-                elAvisoTexto.textContent = msg.toUpperCase();
-                elModalAviso.classList.replace('hidden', 'flex');
-            } else {
-                alert(msg); // Fallback caso o elemento suma
-            }
+            elAvisoTexto.textContent = msg.toUpperCase();
+            elModalAviso.classList.replace('hidden', 'flex');
         }
 
         if (elBtnFecharAviso) elBtnFecharAviso.onclick = () => elModalAviso.classList.replace('flex', 'hidden');
 
         function formatarDataLonga(dataStr) {
-            if (!dataStr) return '...';
             const partes = dataStr.split('/');
             const d = new Date(partes[2], partes[1] - 1, partes[0]);
             return d.toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }).toUpperCase();
@@ -56,14 +48,12 @@
         if (elBtnNovo) {
             elBtnNovo.onclick = (e) => {
                 e.preventDefault();
-                if (!elCombo.value) return mostrarAviso("Selecione a sociedade primeiro");
-                const op = opcoesCombo[elCombo.value];
-                document.getElementById('modal-info-aldeia').textContent = `${op.aldeia} - ${op.sociedade}`;
+                if (!elCombo.value) return mostrarAviso("Selecione a sociedade");
                 elModal.classList.replace('hidden', 'flex');
             };
         }
 
-        if (elModalFechar) elModalFechar.onclick = () => elModal.classList.replace('flex', 'hidden');
+        document.getElementById('modal-novo-fechar').onclick = () => elModal.classList.replace('flex', 'hidden');
 
         function atualizarBotaoSubmit() {
             const emailValido = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(elEmail.value);
@@ -100,18 +90,16 @@
 
         elModalCadastrar.onclick = async () => {
             const nome = elModalNome.value.trim();
-            const op = opcoesCombo[elCombo.value];
-            if (nome.length < 3) return mostrarAviso("Nome muito curto");
+            if (nome.split(' ').length < 2) return mostrarAviso("Informe nome e sobrenome");
             elModalCadastrar.disabled = true;
+            const op = opcoesCombo[elCombo.value];
             const res = await chamarGoogle({ action: 'addMember', nome, aldeia: op.aldeia, sociedade: op.sociedade });
             if (res.ok) {
                 elModal.classList.replace('flex', 'hidden');
                 elModalNome.value = '';
                 nomeSelecionado = nome;
                 elCombo.onchange();
-            } else {
-                mostrarAviso(res.error); 
-            }
+            } else { mostrarAviso(res.error); }
             elModalCadastrar.disabled = false;
         };
 
@@ -120,32 +108,19 @@
             const op = opcoesCombo[elCombo.value];
             elBtn.disabled = true;
             elBtnLabel.textContent = 'ENVIANDO...';
-            
-            const res = await chamarGoogle({ 
-                action: 'saveAttendance', 
-                data: elData.value, 
-                aldeia: op.aldeia, 
-                sociedade: op.sociedade, 
-                nome: nomeSelecionado, 
-                email: elEmail.value 
-            });
-
+            const res = await chamarGoogle({ action: 'saveAttendance', data: elData.value, aldeia: op.aldeia, sociedade: op.sociedade, nome: nomeSelecionado, email: elEmail.value });
             if (res.ok) {
                 document.querySelector('.page-wrap .w-full').innerHTML = `
-                    <div class="card-glass rounded-2xl border border-emerald-500/50 p-8 text-center shadow-card animate-in zoom-in duration-300">
+                    <div class="card-glass rounded-2xl border border-emerald-500/50 p-8 text-center shadow-card">
                         <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-emerald-900/30 text-emerald-500">
-                            <svg class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                            </svg>
+                            <svg class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M5 13l4 4L19 7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
                         </div>
-                        <h2 class="font-serif text-xl text-white uppercase tracking-widest mb-2">Presença Confirmada</h2>
+                        <h2 class="font-serif text-xl text-white uppercase mb-2">Presença Confirmada</h2>
+                        <p class="text-sm text-gray-400 uppercase">Sua honra foi registrada para ${elData.value}.</p>
+                        <button onclick="window.location.reload()" class="mt-8 px-6 py-2 rounded-xl bg-gold text-black text-[10px] font-bold uppercase tracking-widest">Nova Chamada</button>
                     </div>
                 `;
-            } else {
-                mostrarAviso(res.error);
-                elBtn.disabled = false;
-                elBtnLabel.textContent = 'CONFIRMAR PRESENÇA';
-            }
+            } else { mostrarAviso(res.error); elBtn.disabled = false; elBtnLabel.textContent = 'CONFIRMAR'; }
         };
 
         const res = await chamarGoogle({ action: 'getOptions' });

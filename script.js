@@ -1,5 +1,5 @@
 (function () {
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby_bhw6it2nUqDLxpAsWAMtKADobtZdDTJoe1OvXmB4zUnnAcvKmcHacgtysZ3pAdGN/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzBQJqcXHETKXrjM1pN89t4pikhLh2mHuHl7UEVdqUWwb-rrZ--bluJRyHMHo_znpkQ/exec";
 
     var aldeiasMap = {};
     var opcoesCombo = [];
@@ -53,7 +53,7 @@
             };
         }
 
-        document.getElementById('modal-novo-fechar').onclick = () => elModal.classList.replace('hidden', 'flex');
+        document.getElementById('modal-novo-fechar').onclick = () => elModal.classList.replace('flex', 'hidden');
 
         function atualizarBotaoSubmit() {
             const emailValido = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(elEmail.value);
@@ -108,12 +108,20 @@
             const op = opcoesCombo[elCombo.value];
             elBtn.disabled = true;
             elBtnLabel.textContent = 'ENVIANDO...';
-            const res = await chamarGoogle({ action: 'saveAttendance', data: elData.value, aldeia: op.aldeia, sociedade: op.sociedade, nome: nomeSelecionado, email: elEmail.value });
             
+            const res = await chamarGoogle({ 
+                action: 'saveAttendance', 
+                data: elData.value, 
+                aldeia: op.aldeia, 
+                sociedade: op.sociedade, 
+                nome: nomeSelecionado, 
+                email: elEmail.value 
+            });
+
             if (res.ok) {
-                // Tela de sucesso simplificada conforme solicitado
+                // Remove todo o conteúdo do formulário para impedir novo preenchimento
                 document.querySelector('.page-wrap .w-full').innerHTML = `
-                    <div class="card-glass rounded-2xl border border-emerald-500/50 p-8 text-center shadow-card">
+                    <div class="card-glass rounded-2xl border border-emerald-500/50 p-8 text-center shadow-card animate-in zoom-in duration-300">
                         <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-emerald-900/30 text-emerald-500">
                             <svg class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
@@ -123,10 +131,10 @@
                         <p class="text-sm text-gray-400 uppercase tracking-tighter">Sua honra foi registrada.</p>
                     </div>
                 `;
-            } else { 
-                mostrarAviso(res.error); 
-                elBtn.disabled = false; 
-                elBtnLabel.textContent = 'CONFIRMAR PRESENÇA'; 
+            } else {
+                mostrarAviso(res.error);
+                elBtn.disabled = false;
+                elBtnLabel.textContent = 'CONFIRMAR PRESENÇA';
             }
         };
 

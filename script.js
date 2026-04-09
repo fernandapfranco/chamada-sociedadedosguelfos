@@ -1,5 +1,5 @@
 (function () {
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxLgEGiBbfEQpCoE2U5kAMXSR0i7HfI5r7mMpzYpUbp8mXGcUPNndxSZ6bvg_CexziK/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzfp_VTHZvuYiV8mNa-YpgHqdYXfs2Jo61P8njeClCBn2sSZ-95zZIsvpzgaUTm-g42/exec";
 
     var aldeiasMap = {};
     var opcoesCombo = [];
@@ -103,32 +103,42 @@
         elEmail.oninput = atualizarBotaoSubmit;
         elBusca.oninput = renderLista;
 
-        // Inclusão com Validação em Tempo Real
-        elModalCadastrar.onclick = async () => {
-            const nomeNovo = elModalNome.value.trim();
-            if (nomeNovo.split(' ').length < 2) return mostrarAviso("Informe nome e sobrenome.");
+// Cadastro Visual de Novo Membro com fechamento automático
+elModalCadastrar.onclick = async () => {
+    const nomeNovo = elModalNome.value.trim();
+    
+    // 1. Validação básica de preenchimento
+    if (nomeNovo.split(' ').length < 2) {
+        return mostrarAviso("Informe nome e sobrenome.");
+    }
 
-            elModalCadastrar.disabled = true;
-            elModalCadastrar.textContent = "VALIDANDO...";
+    elModalCadastrar.disabled = true;
+    elModalCadastrar.textContent = "VALIDANDO...";
 
-            const res = await chamarGoogle({ action: 'checkMember', nome: nomeNovo });
+    // 2. Consulta ao servidor para verificar duplicidade/similaridade
+    const res = await chamarGoogle({ action: 'checkMember', nome: nomeNovo });
 
-            if (res.ok) {
-                if (!membrosLista.includes(nomeNovo)) {
-                    membrosLista.push(nomeNovo);
-                }
-                nomeSelecionado = nomeNovo;
-                elModal.classList.replace('hidden', 'flex');
-                elModalNome.value = '';
-                renderLista();
-                atualizarBotaoSubmit();
-            } else {
-                mostrarAviso(res.error);
-            }
+    if (res.ok) {
+        // Se o nome for válido, adiciona à lista local
+        if (!membrosLista.includes(nomeNovo)) {
+            membrosLista.push(nomeNovo);
+        }
+        nomeSelecionado = nomeNovo;
+        
+        // --- O AJUSTE ESTÁ AQUI: FECHA A MODAL E LIMPA O CAMPO ---
+        elModal.classList.replace('flex', 'hidden'); 
+        elModalNome.value = '';
+        
+        renderLista(); // Atualiza a lista na tela
+        atualizarBotaoSubmit(); // Ativa o botão de "Confirmar Presença"
+    } else {
+        // Se houver erro (similaridade), mantém a modal aberta e mostra o aviso
+        mostrarAviso(res.error);
+    }
 
-            elModalCadastrar.disabled = false;
-            elModalCadastrar.textContent = "SALVAR";
-        };
+    elModalCadastrar.disabled = false;
+    elModalCadastrar.textContent = "SALVAR";
+};
 
         elForm.onsubmit = async (e) => {
             e.preventDefault();

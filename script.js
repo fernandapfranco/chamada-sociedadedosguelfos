@@ -128,7 +128,7 @@
                             </svg>
                         </div>
                         <h2 class="font-serif text-xl text-white uppercase tracking-widest mb-2">Presença Confirmada</h2>
-                        <p class="text-sm text-gray-400 uppercase tracking-tighter">Sua honra foi registrada.</p>
+                        <p class="text-sm text-gray-400 uppercase tracking-tighter">Não por nós, mas pela Gloria do Seu Nome.</p>
                     </div>
                 `;
             } else {

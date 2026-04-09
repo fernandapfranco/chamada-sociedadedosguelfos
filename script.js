@@ -110,25 +110,29 @@
         elBusca.oninput = renderLista;
 
         // Cadastro Visual de Novo Membro
-        elModalCadastrar.onclick = () => {
-            const nomeDigitado = elModalNome.value.trim();
-            if (nomeDigitado.split(' ').length < 2) return mostrarAviso("Informe nome e sobrenome");
-            
-            const nomeNorm = normalizarTexto(nomeDigitado);
-            
-            // Validação de similaridade local (evita duplicata na lista da tela)
-            const jaExisteNaTela = membrosLista.some(m => normalizarTexto(m) === nomeNorm);
-            if (jaExisteNaTela) return mostrarAviso("Este membro já está na lista");
+elModalCadastrar.onclick = () => {
+    const nomeNovo = elModalNome.value.trim();
+    if (nomeNovo.split(' ').length < 2) return mostrarAviso("Informe nome e sobrenome.");
 
-            // Adiciona provisoriamente na lista e seleciona
-            membrosLista.push(nomeDigitado);
-            nomeSelecionado = nomeDigitado;
-            
-            elModal.classList.replace('flex', 'hidden');
-            elModalNome.value = '';
-            renderLista();
-            atualizarBotaoSubmit();
-        };
+    // Validação de similaridade na lista da tela
+    const nomeNorm = nomeNovo.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    
+    const similarNaLista = membrosLista.some(m => {
+        const mNorm = m.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        return mNorm.includes(nomeNorm) || nomeNorm.includes(mNorm);
+    });
+
+    if (similarNaLista) {
+        return mostrarAviso("UM MEMBRO SIMILAR JÁ EXISTE NESTA SOCIEDADE. SELECIONE-O NA LISTA.");
+    }
+
+    membrosLista.push(nomeNovo);
+    nomeSelecionado = nomeNovo;
+    elModal.classList.replace('hidden', 'flex');
+    elModalNome.value = '';
+    renderLista();
+    atualizarBotaoSubmit();
+};
 
         elForm.onsubmit = async (e) => {
             e.preventDefault();

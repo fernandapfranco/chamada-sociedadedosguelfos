@@ -1,50 +1,87 @@
 (function () {
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbykQ-aZXOz4w_02k2h4YjQnGefsVcPctKXJbeFl1IUiKCJQ-IoB3hbNQc4x4_4L27Te/exec"; // Verifique se esta URL está correta
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbykQ-aZXOz4w_02k2h4YjQnGefsVcPctKXJbeFl1IUiKCJQ-IoB3hbNQc4x4_4L27Te/exec"; 
     var membrosGerais = [];
     var nomeSelecionado = '';
 
     const init = async () => {
+        const elForm = document.getElementById('form-chamada');
         const elLista = document.getElementById('lista-membros');
         const elBusca = document.getElementById('busca-membro');
         const elBtn = document.getElementById('btn-submit');
         const elEmail = document.getElementById('email');
+        const elDataDisplay = document.getElementById('data-display');
+        const elDataInput = document.getElementById('data');
 
-        // Função para mostrar os nomes na tela
-filtrados.slice(0, 10).forEach(nome => {
-    const li = document.createElement('li');
-    // Se o nome estiver na lista mas você quiser destacar quem é novo, 
-    // precisaria enviar essa info no JSON do Google. 
-    // Por enquanto, mantenha o padrão para ser rápido:
-    li.className = `px-4 py-3 cursor-pointer border-b border-white/5 transition-all text-xs tracking-widest uppercase text-white/70 hover:bg-gold/10 hover:text-gold`;
-    li.textContent = nome;
+        function renderLista() {
+            const q = elBusca.value.trim().toLowerCase();
+            // Se não houver busca, mostra os 10 primeiros. Se houver, filtra.
+            const filtrados = q === "" 
+                ? membrosGerais.slice(0, 10) 
+                : membrosGerais.filter(n => n.toLowerCase().includes(q)).slice(0, 10);
+            
+            elLista.innerHTML = '';
+            
+            filtrados.forEach(nome => {
+                const isSel = nome === nomeSelecionado;
+                const li = document.createElement('li');
+                li.className = `px-4 py-3 cursor-pointer border-b border-white/5 transition-all text-xs tracking-widest uppercase ${isSel ? 'bg-gold/20 text-gold font-bold' : 'text-white/70 hover:bg-white/10'}`;
+                li.textContent = nome;
                 li.onclick = () => { 
                     nomeSelecionado = nome;
-                    elBusca.value = nome.toUpperCase(); // Coloca o nome no campo ao clicar
+                    elBusca.value = nome.toUpperCase();
                     atualizarBotao();
                     renderLista(); 
                 };
                 elLista.appendChild(li);
             });
 
-            if (filtrados.length === 0 && termoBusca !== "") {
+            if (filtrados.length === 0 && q !== "") {
                 elLista.innerHTML = '<p class="p-4 text-center text-[10px] text-gray-500 uppercase">Guerreiro não localizado.</p>';
             }
         }
 
         function atualizarBotao() {
-            const emailValido = elEmail.value.includes('@');
-            elBtn.disabled = !(nomeSelecionado && emailValido);
+            elBtn.disabled = !(nomeSelecionado && elEmail.value.includes('@'));
         }
 
-        // Eventos
-        elBusca.oninput = () => {
-            nomeSelecionado = ''; 
-            renderLista();
-            atualizarBotao();
-        };
+        elBusca.oninput = () => { nomeSelecionado = ''; renderLista(); atualizarBotao(); };
         elEmail.oninput = atualizarBotao;
 
-        // Carga Inicial: Busca os nomes no Google assim que a página carrega
+        elForm.onsubmit = async (e) => {
+            e.preventDefault();
+            elBtn.disabled = true;
+            document.getElementById('btn-label').textContent = 'ENVIANDO...';
+
+            try {
+                const res = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'cors',
+                    body: JSON.stringify({
+                        action: 'saveAttendance',
+                        data: elDataInput.value,
+                        nome: nomeSelecionado,
+                        email: elEmail.value
+                    })
+                });
+                const json = await res.json();
+                if (json.ok) {
+                    document.querySelector('.page-wrap .w-full').innerHTML = `
+                        <div class="card-glass p-8 text-center rounded-2xl border border-white/10 shadow-card">
+                            <h2 class="text-gold uppercase font-serif tracking-widest text-xl">Presença Confirmada</h2>
+                            <p class="mt-4 text-[10px] text-gray-400 uppercase tracking-[0.2em]">Não por nós, mas pela Glória do Seu Nome.</p>
+                        </div>`;
+                } else {
+                    alert(json.error);
+                    elBtn.disabled = false;
+                    document.getElementById('btn-label').textContent = 'CONFIRMAR PRESENÇA';
+                }
+            } catch (err) {
+                alert("Erro ao enviar. Tente novamente.");
+                elBtn.disabled = false;
+            }
+        };
+
+        // CARGA INICIAL (AQUI ESTAVA O ERRO)
         try {
             const res = await fetch(SCRIPT_URL, { 
                 method: 'POST', 
@@ -52,13 +89,13 @@ filtrados.slice(0, 10).forEach(nome => {
             });
             const json = await res.json();
             if (json.ok) {
-                document.getElementById('data-display').textContent = json.data.dataPadrao;
-                document.getElementById('data').value = json.data.dataPadrao;
+                elDataInput.value = json.data.dataPadrao;
+                elDataDisplay.textContent = json.data.dataPadrao;
                 membrosGerais = json.data.membros;
-                renderLista(); // Mostra os 10 primeiros nomes
+                renderLista(); // Isso trará os 10 primeiros nomes já na abertura
             }
         } catch (err) {
-            console.error("Erro ao carregar membros:", err);
+            elDataDisplay.textContent = "ERRO DE CONEXÃO";
         }
     };
     window.addEventListener('load', init);

@@ -10,21 +10,13 @@
         const elEmail = document.getElementById('email');
 
         // Função para mostrar os nomes na tela
-        function renderLista() {
-            const termoBusca = elBusca.value.trim().toLowerCase();
-            
-            // Filtra: se não digitou nada, mostra os 10 primeiros. Se digitou, filtra.
-            const filtrados = termoBusca === "" 
-                ? membrosGerais.slice(0, 10) 
-                : membrosGerais.filter(n => n.toLowerCase().includes(termoBusca)).slice(0, 10);
-
-            elLista.innerHTML = '';
-            
-            filtrados.forEach(nome => {
-                const isSel = nome === nomeSelecionado;
-                const li = document.createElement('li');
-                li.className = `px-4 py-3 cursor-pointer border-b border-white/5 transition-all text-xs tracking-widest uppercase ${isSel ? 'bg-gold/20 text-gold font-bold' : 'text-white/70 hover:bg-white/10'}`;
-                li.textContent = nome;
+filtrados.slice(0, 10).forEach(nome => {
+    const li = document.createElement('li');
+    // Se o nome estiver na lista mas você quiser destacar quem é novo, 
+    // precisaria enviar essa info no JSON do Google. 
+    // Por enquanto, mantenha o padrão para ser rápido:
+    li.className = `px-4 py-3 cursor-pointer border-b border-white/5 transition-all text-xs tracking-widest uppercase text-white/70 hover:bg-gold/10 hover:text-gold`;
+    li.textContent = nome;
                 li.onclick = () => { 
                     nomeSelecionado = nome;
                     elBusca.value = nome.toUpperCase(); // Coloca o nome no campo ao clicar

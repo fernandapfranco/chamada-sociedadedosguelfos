@@ -1,4 +1,5 @@
 (function () {
+    // CERTIFIQUE-SE DE USAR A URL DA "NOVA IMPLANTAÇÃO"
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzFJ6A3asVto2Wjb5ukRPGLovTZSoGKc063J_3K1hxCTSl_A7acLtJEA9cg4QsamNw/exec";
 
     var membrosLista = [];
@@ -15,13 +16,33 @@
         const elBtnLabel = document.getElementById('btn-label');
         const elEmail = document.getElementById('email');
 
+        // FUNÇÃO DE CHAMADA AJUSTADA PARA EVITAR CORS
+        async function chamarGoogle(payload) {
+            try {
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'cors',
+                    redirect: 'follow', // Essencial para o Google Script
+                    body: JSON.stringify(payload),
+                    headers: {
+                        // text/plain evita o erro de pre-flight em guias anônimas
+                        'Content-Type': 'text/plain;charset=utf-8'
+                    }
+                });
+                return await response.json();
+            } catch (e) {
+                console.error("Erro na requisição:", e);
+                return { ok: false, error: "Erro de conexão." };
+            }
+        }
+
         function renderLista() {
             const q = elBusca.value.trim().toLowerCase();
             const filtrados = membrosLista.filter(n => n.toLowerCase().includes(q));
             elLista.innerHTML = '';
             
             if (filtrados.length === 0) {
-                elLista.innerHTML = '<p class="p-4 text-center text-xs text-gray-500 uppercase">Nenhum membro cadastrado nesta sociedade.</p>';
+                elLista.innerHTML = '<p class="p-4 text-center text-xs text-gray-500 uppercase">Membro não localizado.</p>';
             }
 
             filtrados.forEach(nome => {
@@ -45,28 +66,16 @@
         }
 
         elCombo.onchange = async () => {
-            if (!elCombo.value) {
-                elCardMembros.classList.add('hidden');
-                return;
-            }
+            if (!elCombo.value) return elCardMembros.classList.add('hidden');
             elCardMembros.classList.remove('hidden');
-            elLista.innerHTML = '<p class="p-4 text-center text-xs text-gold animate-pulse">CARREGANDO...</p>';
+            elLista.innerHTML = '<p class="p-4 text-center text-xs text-gold animate-pulse uppercase">Buscando lista...</p>';
             
             const op = opcoesCombo[elCombo.value];
-            
-            try {
-                const res = await fetch(SCRIPT_URL, { 
-                    method: 'POST', 
-                    body: JSON.stringify({ action: 'listMembers', aldeia: op.aldeia, sociedade: op.sociedade }) 
-                });
-                const json = await res.json();
-                membrosLista = json.ok ? json.data : [];
-                nomeSelecionado = '';
-                renderLista();
-                atualizarBotaoSubmit();
-            } catch (e) {
-                elLista.innerHTML = '<p class="p-4 text-center text-xs text-red-500">ERRO AO CONECTAR.</p>';
-            }
+            const json = await chamarGoogle({ action: 'listMembers', aldeia: op.aldeia, sociedade: op.sociedade });
+            membrosLista = json.ok ? json.data : [];
+            nomeSelecionado = '';
+            renderLista();
+            atualizarBotaoSubmit();
         };
 
         elEmail.oninput = atualizarBotaoSubmit;
@@ -74,44 +83,34 @@
 
         elForm.onsubmit = async (e) => {
             e.preventDefault();
-            const op = opcoesCombo[elCombo.value];
             elBtn.disabled = true;
             elBtnLabel.textContent = 'ENVIANDO...';
             
-            try {
-                const res = await fetch(SCRIPT_URL, { 
-                    method: 'POST', 
-                    body: JSON.stringify({ 
-                        action: 'saveAttendance', 
-                        data: document.getElementById('data').value, 
-                        aldeia: op.aldeia, 
-                        sociedade: op.sociedade, 
-                        nome: nomeSelecionado, 
-                        email: elEmail.value 
-                    }) 
-                });
-                const json = await res.json();
+            const op = opcoesCombo[elCombo.value];
+            const json = await chamarGoogle({ 
+                action: 'saveAttendance', 
+                data: document.getElementById('data').value, 
+                aldeia: op.aldeia, 
+                sociedade: op.sociedade, 
+                nome: nomeSelecionado, 
+                email: elEmail.value 
+            });
 
-                if (json.ok) {
-                    document.querySelector('.page-wrap .w-full').innerHTML = `
-                        <div class="card-glass p-8 text-center rounded-2xl border border-emerald-500/50">
-                            <h2 class="text-white uppercase font-serif tracking-widest">Presença Confirmada</h2>
-                            <p class="mt-4 text-xs text-gray-400 uppercase">Não por nós, mas pela Glória do Seu Nome.</p>
-                        </div>`;
-                } else {
-                    alert(json.error);
-                    elBtn.disabled = false;
-                    elBtnLabel.textContent = 'CONFIRMAR PRESENÇA';
-                }
-            } catch (err) {
-                alert("ERRO DE CONEXÃO.");
+            if (json.ok) {
+                document.querySelector('.page-wrap .w-full').innerHTML = `
+                    <div class="card-glass p-8 text-center rounded-2xl border border-emerald-500/50">
+                        <h2 class="text-white uppercase font-serif tracking-widest">Presença Confirmada</h2>
+                        <p class="mt-4 text-xs text-gray-400 uppercase tracking-tighter text-emerald-400">Glória a Deus!</p>
+                    </div>`;
+            } else {
+                alert(json.error);
                 elBtn.disabled = false;
                 elBtnLabel.textContent = 'CONFIRMAR PRESENÇA';
             }
         };
 
-        const resInit = await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: 'getOptions' }) });
-        const jsonInit = await resInit.json();
+        // CARGA INICIAL
+        const jsonInit = await chamarGoogle({ action: 'getOptions' });
         if (jsonInit.ok) {
             document.getElementById('data').value = jsonInit.data.dataPadrao;
             document.getElementById('data-display').textContent = jsonInit.data.dataPadrao;

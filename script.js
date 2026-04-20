@@ -1,99 +1,58 @@
 (function () {
-    // ATENÇÃO: Substitua pela URL da sua Nova Implantação de TESTE
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbykQ-aZXOz4w_02k2h4YjQnGefsVcPctKXJbeFl1IUiKCJQ-IoB3hbNQc4x4_4L27Te/exec";
-
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbykQ-aZXOz4w_02k2h4YjQnGefsVcPctKXJbeFl1IUiKCJQ-IoB3hbNQc4x4_4L27Te/exec"; // Verifique se esta URL está correta
     var membrosGerais = [];
     var nomeSelecionado = '';
 
     const init = async () => {
-        const elForm = document.getElementById('form-chamada');
         const elLista = document.getElementById('lista-membros');
         const elBusca = document.getElementById('busca-membro');
         const elBtn = document.getElementById('btn-submit');
         const elEmail = document.getElementById('email');
-        const elDataDisplay = document.getElementById('data-display');
-        const elDataInput = document.getElementById('data');
 
-       // Dentro da sua função init no script.js, certifique-se de que renderLista está assim:
-function renderLista() {
-    const q = elBusca.value.trim().toLowerCase();
-    const filtrados = membrosGerais.filter(n => n.toLowerCase().includes(q));
-    
-    elLista.innerHTML = '';
-    
-    if (q.length > 0) {
-        if (filtrados.length > 0) {
-            filtrados.slice(0, 8).forEach(nome => {
+        // Função para mostrar os nomes na tela
+        function renderLista() {
+            const termoBusca = elBusca.value.trim().toLowerCase();
+            
+            // Filtra: se não digitou nada, mostra os 10 primeiros. Se digitou, filtra.
+            const filtrados = termoBusca === "" 
+                ? membrosGerais.slice(0, 10) 
+                : membrosGerais.filter(n => n.toLowerCase().includes(termoBusca)).slice(0, 10);
+
+            elLista.innerHTML = '';
+            
+            filtrados.forEach(nome => {
                 const isSel = nome === nomeSelecionado;
                 const li = document.createElement('li');
-                // Estilo da lista com hover e cores do tema
-                li.className = `px-4 py-3 cursor-pointer border-b border-white/5 transition-colors uppercase text-xs tracking-widest ${isSel ? 'bg-gold/20 text-gold font-bold' : 'text-white/70 hover:bg-white/10 hover:text-gold'}`;
+                li.className = `px-4 py-3 cursor-pointer border-b border-white/5 transition-all text-xs tracking-widest uppercase ${isSel ? 'bg-gold/20 text-gold font-bold' : 'text-white/70 hover:bg-white/10'}`;
                 li.textContent = nome;
                 li.onclick = () => { 
                     nomeSelecionado = nome;
-                    elBusca.value = nome.toUpperCase(); // Preenche o campo com o nome escolhido
-                    elLista.innerHTML = ''; // Esconde a lista após selecionar
-                    atualizarBotao(); 
+                    elBusca.value = nome.toUpperCase(); // Coloca o nome no campo ao clicar
+                    atualizarBotao();
+                    renderLista(); 
                 };
                 elLista.appendChild(li);
             });
-        } else {
-            elLista.innerHTML = '<p class="p-4 text-center text-[10px] text-gray-500 uppercase tracking-widest">Guerreiro não localizado.</p>';
+
+            if (filtrados.length === 0 && termoBusca !== "") {
+                elLista.innerHTML = '<p class="p-4 text-center text-[10px] text-gray-500 uppercase">Guerreiro não localizado.</p>';
+            }
         }
-    } else {
-        elLista.innerHTML = '<p class="p-4 text-center text-[10px] text-gray-500 uppercase tracking-widest">Digite para buscar...</p>';
-    }
-}
 
         function atualizarBotao() {
-            const emailValido = elEmail.value.includes('@') && elEmail.value.length > 5;
+            const emailValido = elEmail.value.includes('@');
             elBtn.disabled = !(nomeSelecionado && emailValido);
         }
 
+        // Eventos
         elBusca.oninput = () => {
-            nomeSelecionado = ''; // Reseta seleção ao digitar algo novo
+            nomeSelecionado = ''; 
             renderLista();
             atualizarBotao();
         };
-        
         elEmail.oninput = atualizarBotao;
 
-        elForm.onsubmit = async (e) => {
-            e.preventDefault();
-            elBtn.disabled = true;
-            document.getElementById('btn-label').textContent = 'ENVIANDO...';
-
-            try {
-                const res = await fetch(SCRIPT_URL, {
-                    method: 'POST',
-                    mode: 'cors',
-                    body: JSON.stringify({
-                        action: 'saveAttendance',
-                        data: elDataInput.value,
-                        nome: nomeSelecionado,
-                        email: elEmail.value
-                    })
-                });
-                const json = await res.json();
-                
-                if (json.ok) {
-                    document.querySelector('.page-wrap .w-full').innerHTML = `
-                        <div class="card-glass p-8 text-center rounded-2xl border border-white/10">
-                            <h2 class="text-gold uppercase font-serif tracking-widest text-xl">Presença Confirmada</h2>
-                            <p class="mt-4 text-[10px] text-gray-400 uppercase tracking-[0.2em]">Não por nós, mas pela Glória do Seu Nome.</p>
-                        </div>`;
-                } else {
-                    alert(json.error);
-                    elBtn.disabled = false;
-                    document.getElementById('btn-label').textContent = 'CONFIRMAR PRESENÇA';
-                }
-            } catch (err) {
-                alert("Erro de conexão. Tente novamente.");
-                elBtn.disabled = false;
-            }
-        };
-
-        // Carregar dados iniciais
+        // Carga Inicial: Busca os nomes no Google assim que a página carrega
         try {
             const res = await fetch(SCRIPT_URL, { 
                 method: 'POST', 
@@ -101,13 +60,13 @@ function renderLista() {
             });
             const json = await res.json();
             if (json.ok) {
-                elDataInput.value = json.data.dataPadrao;
-                elDataDisplay.textContent = json.data.dataPadrao;
+                document.getElementById('data-display').textContent = json.data.dataPadrao;
+                document.getElementById('data').value = json.data.dataPadrao;
                 membrosGerais = json.data.membros;
-                renderLista();
+                renderLista(); // Mostra os 10 primeiros nomes
             }
         } catch (err) {
-            elDataDisplay.textContent = "ERRO AO CARREGAR";
+            console.error("Erro ao carregar membros:", err);
         }
     };
     window.addEventListener('load', init);

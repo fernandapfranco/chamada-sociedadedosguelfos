@@ -1,5 +1,5 @@
 (function () {
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx-B-sqgk2W2edejNNMXcWrUNgUPeJrX7eT2umpKk_wMZVm483XLIikIQvsspYN3gGH/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbydc-etldazng-w_OFLkXcHzmRZj31j8mc95tbWBay5ccKcUpuFi4ptRRkZDUgZE43D/exec";
 
     var membrosLista = [];
     var opcoesCombo = [];
@@ -45,20 +45,28 @@
         }
 
         elCombo.onchange = async () => {
-            if (!elCombo.value) return elCardMembros.classList.add('hidden');
+            if (!elCombo.value) {
+                elCardMembros.classList.add('hidden');
+                return;
+            }
             elCardMembros.classList.remove('hidden');
             elLista.innerHTML = '<p class="p-4 text-center text-xs text-gold animate-pulse">CARREGANDO...</p>';
             
             const op = opcoesCombo[elCombo.value];
-            const res = await fetch(SCRIPT_URL, { 
-                method: 'POST', 
-                body: JSON.stringify({ action: 'listMembers', aldeia: op.aldeia, sociedade: op.sociedade }) 
-            });
-            const json = await res.json();
-            membrosLista = json.ok ? json.data : [];
-            nomeSelecionado = '';
-            renderLista();
-            atualizarBotaoSubmit();
+            
+            try {
+                const res = await fetch(SCRIPT_URL, { 
+                    method: 'POST', 
+                    body: JSON.stringify({ action: 'listMembers', aldeia: op.aldeia, sociedade: op.sociedade }) 
+                });
+                const json = await res.json();
+                membrosLista = json.ok ? json.data : [];
+                nomeSelecionado = '';
+                renderLista();
+                atualizarBotaoSubmit();
+            } catch (e) {
+                elLista.innerHTML = '<p class="p-4 text-center text-xs text-red-500">ERRO AO CONECTAR.</p>';
+            }
         };
 
         elEmail.oninput = atualizarBotaoSubmit;

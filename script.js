@@ -1,82 +1,55 @@
 (function () {
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzfp_VTHZvuYiV8mNa-YpgHqdYXfs2Jo61P8njeClCBn2sSZ-95zZIsvpzgaUTm-g42/exec";
+    // CERTIFIQUE-SE DE USAR A URL DA "NOVA IMPLANTAÇÃO"
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyDk0SIFNLLVL6WitBWa7QymbeNrtNLFrDq4UueJ1xuix0qwkaEWBl2TU5NHB2IoNbs/exec";
 
-    var aldeiasMap = {};
-    var opcoesCombo = [];
     var membrosLista = [];
+    var opcoesCombo = [];
     var nomeSelecionado = '';
 
     const init = async () => {
         const elForm = document.getElementById('form-chamada');
-        const elData = document.getElementById('data');
-        const elDataDisplay = document.getElementById('data-display');
         const elCombo = document.getElementById('combo-aldeia-sociedade');
         const elCardMembros = document.getElementById('card-membros');
-        const elBtnNovo = document.getElementById('btn-novo-membro');
-        const elBusca = document.getElementById('busca-membro');
         const elLista = document.getElementById('lista-membros');
-        const elEmail = document.getElementById('email');
+        const elBusca = document.getElementById('busca-membro');
         const elBtn = document.getElementById('btn-submit');
         const elBtnLabel = document.getElementById('btn-label');
-        const elModal = document.getElementById('modal-novo');
-        const elModalInfo = document.getElementById('modal-info-aldeia');
-        const elModalNome = document.getElementById('modal-nome');
-        const elModalCadastrar = document.getElementById('modal-btn-cadastrar');
-        const elModalAviso = document.getElementById('modal-aviso');
-        const elAvisoTexto = document.getElementById('aviso-texto');
-        const elBtnFecharAviso = document.getElementById('btn-fechar-aviso');
+        const elEmail = document.getElementById('email');
 
+        // FUNÇÃO DE CHAMADA AJUSTADA PARA EVITAR CORS
         async function chamarGoogle(payload) {
             try {
-                const response = await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload) });
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'cors',
+                    redirect: 'follow', // Essencial para o Google Script
+                    body: JSON.stringify(payload),
+                    headers: {
+                        // text/plain evita o erro de pre-flight em guias anônimas
+                        'Content-Type': 'text/plain;charset=utf-8'
+                    }
+                });
                 return await response.json();
-            } catch (e) { return { ok: false, error: "Erro de conexão." }; }
-        }
-
-        function mostrarAviso(msg) {
-            elAvisoTexto.textContent = msg.toUpperCase();
-            elModalAviso.classList.replace('hidden', 'flex');
-        }
-
-        function normalizarTexto(t) {
-            return t.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, " ").trim().toLowerCase();
-        }
-
-        if (elBtnFecharAviso) elBtnFecharAviso.onclick = () => elModalAviso.classList.replace('flex', 'hidden');
-
-        function formatarDataLonga(dataStr) {
-            if (!dataStr) return "...";
-            const partes = dataStr.split('/');
-            const d = new Date(partes[2], partes[1] - 1, partes[0]);
-            return d.toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }).toUpperCase();
-        }
-
-        if (elBtnNovo) {
-            elBtnNovo.onclick = (e) => {
-                e.preventDefault();
-                if (!elCombo.value) return mostrarAviso("Selecione a sociedade primeiro");
-                const op = opcoesCombo[elCombo.value];
-                if (elModalInfo) elModalInfo.textContent = `${op.aldeia} — ${op.sociedade}`;
-                elModal.classList.replace('hidden', 'flex');
-            };
-        }
-
-        document.getElementById('modal-novo-fechar').onclick = () => elModal.classList.replace('flex', 'hidden');
-
-        function atualizarBotaoSubmit() {
-            const emailValido = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(elEmail.value);
-            elBtn.disabled = !(emailValido && nomeSelecionado !== "" && elCombo.value !== "");
+            } catch (e) {
+                console.error("Erro na requisição:", e);
+                return { ok: false, error: "Erro de conexão." };
+            }
         }
 
         function renderLista() {
-            var q = normalizarTexto(elBusca.value);
-            var filtrados = membrosLista.filter(n => !q || normalizarTexto(n).includes(q));
+            const q = elBusca.value.trim().toLowerCase();
+            const filtrados = membrosLista.filter(n => n.toLowerCase().includes(q));
             elLista.innerHTML = '';
+            
+            if (filtrados.length === 0) {
+                elLista.innerHTML = '<p class="p-4 text-center text-xs text-gray-500 uppercase">Membro não localizado.</p>';
+            }
+
             filtrados.forEach(nome => {
-                const isSel = (nome === nomeSelecionado);
+                const isSel = nome === nomeSelecionado;
                 const li = document.createElement('li');
-                li.className = `flex items-center justify-between px-4 py-3 cursor-pointer transition-colors ${isSel ? 'bg-gold/10' : ''}`;
-                li.innerHTML = `<span class="text-sm ${isSel ? 'text-gold font-bold' : 'text-white'}">${nome}</span>`;
+                li.className = `px-4 py-3 cursor-pointer border-b border-white/5 transition-colors ${isSel ? 'bg-gold/20 text-gold font-bold' : 'text-white/80 hover:bg-white/5'}`;
+                li.textContent = nome.toUpperCase();
                 li.onclick = () => { 
                     nomeSelecionado = isSel ? '' : nome; 
                     renderLista(); 
@@ -84,18 +57,23 @@
                 };
                 elLista.appendChild(li);
             });
-            document.getElementById('badge-membros').textContent = membrosLista.length;
+            document.getElementById('badge-membros').textContent = filtrados.length;
+        }
+
+        function atualizarBotaoSubmit() {
+            const emailValido = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(elEmail.value);
+            elBtn.disabled = !(emailValido && nomeSelecionado !== "" && elCombo.value !== "");
         }
 
         elCombo.onchange = async () => {
-            const val = elCombo.value;
-            if (!val) return elCardMembros.classList.add('hidden-section');
-            elCardMembros.classList.remove('hidden-section');
-            elLista.innerHTML = '<p class="p-4 text-center text-xs text-gray-400 uppercase tracking-widest">Buscando...</p>';
-            const op = opcoesCombo[val];
-            const res = await chamarGoogle({ action: 'listMembers', aldeia: op.aldeia, sociedade: op.sociedade });
-            membrosLista = res.ok ? res.data : [];
-            nomeSelecionado = ''; 
+            if (!elCombo.value) return elCardMembros.classList.add('hidden');
+            elCardMembros.classList.remove('hidden');
+            elLista.innerHTML = '<p class="p-4 text-center text-xs text-gold animate-pulse uppercase">Buscando lista...</p>';
+            
+            const op = opcoesCombo[elCombo.value];
+            const json = await chamarGoogle({ action: 'listMembers', aldeia: op.aldeia, sociedade: op.sociedade });
+            membrosLista = json.ok ? json.data : [];
+            nomeSelecionado = '';
             renderLista();
             atualizarBotaoSubmit();
         };
@@ -103,90 +81,48 @@
         elEmail.oninput = atualizarBotaoSubmit;
         elBusca.oninput = renderLista;
 
-// Cadastro Visual de Novo Membro com fechamento automático
-elModalCadastrar.onclick = async () => {
-    const nomeNovo = elModalNome.value.trim();
-    
-    // 1. Validação básica de preenchimento
-    if (nomeNovo.split(' ').length < 2) {
-        return mostrarAviso("Informe nome e sobrenome.");
-    }
-
-    elModalCadastrar.disabled = true;
-    elModalCadastrar.textContent = "VALIDANDO...";
-
-    // 2. Consulta ao servidor para verificar duplicidade/similaridade
-    const res = await chamarGoogle({ action: 'checkMember', nome: nomeNovo });
-
-    if (res.ok) {
-        // Se o nome for válido, adiciona à lista local
-        if (!membrosLista.includes(nomeNovo)) {
-            membrosLista.push(nomeNovo);
-        }
-        nomeSelecionado = nomeNovo;
-        
-        // --- O AJUSTE ESTÁ AQUI: FECHA A MODAL E LIMPA O CAMPO ---
-        elModal.classList.replace('flex', 'hidden'); 
-        elModalNome.value = '';
-        
-        renderLista(); // Atualiza a lista na tela
-        atualizarBotaoSubmit(); // Ativa o botão de "Confirmar Presença"
-    } else {
-        // Se houver erro (similaridade), mantém a modal aberta e mostra o aviso
-        mostrarAviso(res.error);
-    }
-
-    elModalCadastrar.disabled = false;
-    elModalCadastrar.textContent = "SALVAR";
-};
-
         elForm.onsubmit = async (e) => {
             e.preventDefault();
-            const op = opcoesCombo[elCombo.value];
             elBtn.disabled = true;
             elBtnLabel.textContent = 'ENVIANDO...';
             
-            const res = await chamarGoogle({ 
+            const op = opcoesCombo[elCombo.value];
+            const json = await chamarGoogle({ 
                 action: 'saveAttendance', 
-                data: elData.value, 
+                data: document.getElementById('data').value, 
                 aldeia: op.aldeia, 
                 sociedade: op.sociedade, 
                 nome: nomeSelecionado, 
                 email: elEmail.value 
             });
 
-            if (res.ok) {
+            if (json.ok) {
                 document.querySelector('.page-wrap .w-full').innerHTML = `
-                    <div class="card-glass rounded-2xl border border-emerald-500/50 p-8 text-center shadow-card animate-in zoom-in duration-300">
-                        <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-emerald-900/30 text-emerald-500">
-                            <svg class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
-                        </div>
-                        <h2 class="font-serif text-xl text-white uppercase tracking-widest mb-2">Presença Confirmada</h2>
-                        <p class="text-sm text-gray-400 uppercase tracking-tighter">Não por nós, mas pela Glória do Seu Nome.</p>
-                    </div>
-                `;
+                    <div class="card-glass p-8 text-center rounded-2xl border border-emerald-500/50">
+                        <h2 class="text-white uppercase font-serif tracking-widest">Presença Confirmada</h2>
+                        <p class="mt-4 text-xs text-gray-400 uppercase tracking-tighter text-emerald-400">Glória a Deus!</p>
+                    </div>`;
             } else {
-                mostrarAviso(res.error);
+                alert(json.error);
                 elBtn.disabled = false;
                 elBtnLabel.textContent = 'CONFIRMAR PRESENÇA';
             }
         };
 
-        const resInit = await chamarGoogle({ action: 'getOptions' });
-        if (resInit.ok) {
-            aldeiasMap = resInit.data.aldeias;
-            elData.value = resInit.data.dataPadrao;
-            elDataDisplay.textContent = formatarDataLonga(resInit.data.dataPadrao);
+        // CARGA INICIAL
+        const jsonInit = await chamarGoogle({ action: 'getOptions' });
+        if (jsonInit.ok) {
+            document.getElementById('data').value = jsonInit.data.dataPadrao;
+            document.getElementById('data-display').textContent = jsonInit.data.dataPadrao;
             elCombo.innerHTML = '<option value="">SELECIONE A SOCIEDADE</option>';
             let i = 0;
-            for (let aldeia in aldeiasMap) {
-                aldeiasMap[aldeia].forEach(soc => {
+            for (let aldeia in jsonInit.data.aldeias) {
+                jsonInit.data.aldeias[aldeia].forEach(soc => {
                     opcoesCombo.push({ aldeia, sociedade: soc });
                     elCombo.add(new Option(`${aldeia} - ${soc}`, i++));
                 });
             }
         }
     };
-
     window.addEventListener('load', init);
 })();

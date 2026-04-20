@@ -1,5 +1,5 @@
 (function () {
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyItpalbJwQ--JqAuLhDuxMikqhp8n0o6VwTbNtBwUHBP9eUGMP2AL4kcNzDgDgRkRA/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzFJ6A3asVto2Wjb5ukRPGLovTZSoGKc063J_3K1hxCTSl_A7acLtJEA9cg4QsamNw/exec";
 
     var membrosLista = [];
     var opcoesCombo = [];

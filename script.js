@@ -1,6 +1,6 @@
 (function () {
     // CERTIFIQUE-SE DE USAR A URL DA "NOVA IMPLANTAÇÃO"
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzFJ6A3asVto2Wjb5ukRPGLovTZSoGKc063J_3K1hxCTSl_A7acLtJEA9cg4QsamNw/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwM5TPg1mmeqaB-QWYd0I-Z3CnYa6gfKqXAjf9l3evhFfm__tSdJVBKCoTRALpFGVvd/exec";
 
     var membrosLista = [];
     var opcoesCombo = [];

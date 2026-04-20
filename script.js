@@ -1,6 +1,6 @@
 (function () {
     // CERTIFIQUE-SE DE USAR A URL DA "NOVA IMPLANTAÇÃO"
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyDk0SIFNLLVL6WitBWa7QymbeNrtNLFrDq4UueJ1xuix0qwkaEWBl2TU5NHB2IoNbs/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzK2_XlcU9egWvClfyANbToMFQllvNkoZGLhx979wCGUkkHQDX0t8hdoQ1bPSpSRBAp/exec";
 
     var membrosLista = [];
     var opcoesCombo = [];
@@ -100,7 +100,7 @@
                 document.querySelector('.page-wrap .w-full').innerHTML = `
                     <div class="card-glass p-8 text-center rounded-2xl border border-emerald-500/50">
                         <h2 class="text-white uppercase font-serif tracking-widest">Presença Confirmada</h2>
-                        <p class="mt-4 text-xs text-gray-400 uppercase tracking-tighter text-emerald-400">Glória a Deus!</p>
+                        <p class="mt-4 text-xs text-gray-400 uppercase tracking-tighter text-emerald-400">Não por nós, mas pela Glória do Seu Nome.</p>
                     </div>`;
             } else {
                 alert(json.error);

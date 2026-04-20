@@ -96,13 +96,15 @@
                 email: elEmail.value 
             });
 
-            if (json.ok) {
-                document.querySelector('.page-wrap .w-full').innerHTML = `
-                    <div class="card-glass p-8 text-center rounded-2xl border border-emerald-500/50">
-                        <h2 class="text-white uppercase font-serif tracking-widest">Presença Confirmada</h2>
-                        <p class="mt-4 text-xs text-gray-400 uppercase tracking-tighter text-emerald-400">Não por nós, mas pela Glória do Seu Nome.</p>
-                    </div>`;
-            } else {
+if (json.ok) {
+    document.querySelector('.page-wrap .w-full').innerHTML = `
+        <div class="card-glass p-8 text-center rounded-2xl border border-white/10 shadow-card">
+            <h2 class="text-gold uppercase font-serif tracking-widest text-xl">Presença Confirmada</h2>
+            <p class="mt-4 text-[10px] text-gray-400 uppercase tracking-[0.2em] font-medium">
+                Não por nós, mas pela Glória do Seu Nome.
+            </p>
+        </div>`;
+} else {
                 alert(json.error);
                 elBtn.disabled = false;
                 elBtnLabel.textContent = 'CONFIRMAR PRESENÇA';

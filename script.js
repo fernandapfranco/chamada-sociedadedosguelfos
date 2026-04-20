@@ -14,31 +14,36 @@
         const elDataDisplay = document.getElementById('data-display');
         const elDataInput = document.getElementById('data');
 
-        function renderLista() {
-            const q = elBusca.value.trim().toLowerCase();
-            // Filtra os membros que contêm o texto digitado
-            const filtrados = membrosGerais.filter(n => n.toLowerCase().includes(q));
-            
-            elLista.innerHTML = '';
-            
-            if (q.length > 0) {
-                // Mostra apenas os 8 primeiros resultados para não poluir a tela
-                filtrados.slice(0, 8).forEach(nome => {
-                    const isSel = nome === nomeSelecionado;
-                    const li = document.createElement('li');
-                    li.className = `px-4 py-3 cursor-pointer border-b border-white/5 transition-colors ${isSel ? 'bg-gold/20 text-gold font-bold' : 'text-white/80 hover:bg-white/5'}`;
-                    li.textContent = nome.toUpperCase();
-                    li.onclick = () => { 
-                        nomeSelecionado = isSel ? '' : nome; 
-                        renderLista(); 
-                        atualizarBotao(); 
-                    };
-                    elLista.appendChild(li);
-                });
-            } else {
-                elLista.innerHTML = '<p class="p-4 text-center text-[10px] text-gray-500 uppercase tracking-widest">Digite seu nome para buscar...</p>';
-            }
+       // Dentro da sua função init no script.js, certifique-se de que renderLista está assim:
+function renderLista() {
+    const q = elBusca.value.trim().toLowerCase();
+    const filtrados = membrosGerais.filter(n => n.toLowerCase().includes(q));
+    
+    elLista.innerHTML = '';
+    
+    if (q.length > 0) {
+        if (filtrados.length > 0) {
+            filtrados.slice(0, 8).forEach(nome => {
+                const isSel = nome === nomeSelecionado;
+                const li = document.createElement('li');
+                // Estilo da lista com hover e cores do tema
+                li.className = `px-4 py-3 cursor-pointer border-b border-white/5 transition-colors uppercase text-xs tracking-widest ${isSel ? 'bg-gold/20 text-gold font-bold' : 'text-white/70 hover:bg-white/10 hover:text-gold'}`;
+                li.textContent = nome;
+                li.onclick = () => { 
+                    nomeSelecionado = nome;
+                    elBusca.value = nome.toUpperCase(); // Preenche o campo com o nome escolhido
+                    elLista.innerHTML = ''; // Esconde a lista após selecionar
+                    atualizarBotao(); 
+                };
+                elLista.appendChild(li);
+            });
+        } else {
+            elLista.innerHTML = '<p class="p-4 text-center text-[10px] text-gray-500 uppercase tracking-widest">Guerreiro não localizado.</p>';
         }
+    } else {
+        elLista.innerHTML = '<p class="p-4 text-center text-[10px] text-gray-500 uppercase tracking-widest">Digite para buscar...</p>';
+    }
+}
 
         function atualizarBotao() {
             const emailValido = elEmail.value.includes('@') && elEmail.value.length > 5;

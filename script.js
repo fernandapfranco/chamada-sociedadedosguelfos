@@ -12,15 +12,16 @@
         const elDataDisplay = document.getElementById('data-display');
         const elDataInput = document.getElementById('data');
 
-        function renderLista() {
-            const q = elBusca.value.trim().toLowerCase();
-            // Se não houver busca, mostra os 10 primeiros. Se houver, filtra.
-            const filtrados = q === "" 
-                ? membrosGerais.slice(0, 10) 
-                : membrosGerais.filter(n => n.toLowerCase().includes(q)).slice(0, 10);
-            
-            elLista.innerHTML = '';
-            
+function renderLista() {
+    const q = elBusca.value.trim().toLowerCase();
+    elLista.innerHTML = ''; // Limpa a lista sempre
+    
+    // SÓ EXIBE SE TIVER PELO MENOS 1 CARACTERE DIGITADO
+    if (q.length > 0) {
+        const filtrados = membrosGerais.filter(n => n.toLowerCase().includes(q));
+        
+        if (filtrados.length > 0) {
+            // Mostramos todos os nomes que batem com a busca, sem limite de 10
             filtrados.forEach(nome => {
                 const isSel = nome === nomeSelecionado;
                 const li = document.createElement('li');
@@ -29,16 +30,16 @@
                 li.onclick = () => { 
                     nomeSelecionado = nome;
                     elBusca.value = nome.toUpperCase();
-                    atualizarBotao();
-                    renderLista(); 
+                    elLista.innerHTML = ''; // Esconde a lista após selecionar
+                    atualizarBotao(); 
                 };
                 elLista.appendChild(li);
             });
-
-            if (filtrados.length === 0 && q !== "") {
-                elLista.innerHTML = '<p class="p-4 text-center text-[10px] text-gray-500 uppercase">Guerreiro não localizado.</p>';
-            }
+        } else {
+            elLista.innerHTML = '<p class="p-4 text-center text-[10px] text-gray-500 uppercase">Guerreiro não localizado.</p>';
         }
+    }
+}
 
         function atualizarBotao() {
             elBtn.disabled = !(nomeSelecionado && elEmail.value.includes('@'));

@@ -1,127 +1,108 @@
 (function () {
-    // CERTIFIQUE-SE DE USAR A URL DA "NOVA IMPLANTAÇÃO"
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzK2_XlcU9egWvClfyANbToMFQllvNkoZGLhx979wCGUkkHQDX0t8hdoQ1bPSpSRBAp/exec";
+    // ATENÇÃO: Substitua pela URL da sua Nova Implantação de TESTE
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbykQ-aZXOz4w_02k2h4YjQnGefsVcPctKXJbeFl1IUiKCJQ-IoB3hbNQc4x4_4L27Te/exec";
 
-    var membrosLista = [];
-    var opcoesCombo = [];
+    var membrosGerais = [];
     var nomeSelecionado = '';
 
     const init = async () => {
         const elForm = document.getElementById('form-chamada');
-        const elCombo = document.getElementById('combo-aldeia-sociedade');
-        const elCardMembros = document.getElementById('card-membros');
         const elLista = document.getElementById('lista-membros');
         const elBusca = document.getElementById('busca-membro');
         const elBtn = document.getElementById('btn-submit');
-        const elBtnLabel = document.getElementById('btn-label');
         const elEmail = document.getElementById('email');
-
-        // FUNÇÃO DE CHAMADA AJUSTADA PARA EVITAR CORS
-        async function chamarGoogle(payload) {
-            try {
-                const response = await fetch(SCRIPT_URL, {
-                    method: 'POST',
-                    mode: 'cors',
-                    redirect: 'follow', // Essencial para o Google Script
-                    body: JSON.stringify(payload),
-                    headers: {
-                        // text/plain evita o erro de pre-flight em guias anônimas
-                        'Content-Type': 'text/plain;charset=utf-8'
-                    }
-                });
-                return await response.json();
-            } catch (e) {
-                console.error("Erro na requisição:", e);
-                return { ok: false, error: "Erro de conexão." };
-            }
-        }
+        const elDataDisplay = document.getElementById('data-display');
+        const elDataInput = document.getElementById('data');
 
         function renderLista() {
             const q = elBusca.value.trim().toLowerCase();
-            const filtrados = membrosLista.filter(n => n.toLowerCase().includes(q));
+            // Filtra os membros que contêm o texto digitado
+            const filtrados = membrosGerais.filter(n => n.toLowerCase().includes(q));
+            
             elLista.innerHTML = '';
             
-            if (filtrados.length === 0) {
-                elLista.innerHTML = '<p class="p-4 text-center text-xs text-gray-500 uppercase">Membro não localizado.</p>';
+            if (q.length > 0) {
+                // Mostra apenas os 8 primeiros resultados para não poluir a tela
+                filtrados.slice(0, 8).forEach(nome => {
+                    const isSel = nome === nomeSelecionado;
+                    const li = document.createElement('li');
+                    li.className = `px-4 py-3 cursor-pointer border-b border-white/5 transition-colors ${isSel ? 'bg-gold/20 text-gold font-bold' : 'text-white/80 hover:bg-white/5'}`;
+                    li.textContent = nome.toUpperCase();
+                    li.onclick = () => { 
+                        nomeSelecionado = isSel ? '' : nome; 
+                        renderLista(); 
+                        atualizarBotao(); 
+                    };
+                    elLista.appendChild(li);
+                });
+            } else {
+                elLista.innerHTML = '<p class="p-4 text-center text-[10px] text-gray-500 uppercase tracking-widest">Digite seu nome para buscar...</p>';
             }
-
-            filtrados.forEach(nome => {
-                const isSel = nome === nomeSelecionado;
-                const li = document.createElement('li');
-                li.className = `px-4 py-3 cursor-pointer border-b border-white/5 transition-colors ${isSel ? 'bg-gold/20 text-gold font-bold' : 'text-white/80 hover:bg-white/5'}`;
-                li.textContent = nome.toUpperCase();
-                li.onclick = () => { 
-                    nomeSelecionado = isSel ? '' : nome; 
-                    renderLista(); 
-                    atualizarBotaoSubmit(); 
-                };
-                elLista.appendChild(li);
-            });
-            document.getElementById('badge-membros').textContent = filtrados.length;
         }
 
-        function atualizarBotaoSubmit() {
-            const emailValido = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(elEmail.value);
-            elBtn.disabled = !(emailValido && nomeSelecionado !== "" && elCombo.value !== "");
+        function atualizarBotao() {
+            const emailValido = elEmail.value.includes('@') && elEmail.value.length > 5;
+            elBtn.disabled = !(nomeSelecionado && emailValido);
         }
 
-        elCombo.onchange = async () => {
-            if (!elCombo.value) return elCardMembros.classList.add('hidden');
-            elCardMembros.classList.remove('hidden');
-            elLista.innerHTML = '<p class="p-4 text-center text-xs text-gold animate-pulse uppercase">Buscando lista...</p>';
-            
-            const op = opcoesCombo[elCombo.value];
-            const json = await chamarGoogle({ action: 'listMembers', aldeia: op.aldeia, sociedade: op.sociedade });
-            membrosLista = json.ok ? json.data : [];
-            nomeSelecionado = '';
+        elBusca.oninput = () => {
+            nomeSelecionado = ''; // Reseta seleção ao digitar algo novo
             renderLista();
-            atualizarBotaoSubmit();
+            atualizarBotao();
         };
-
-        elEmail.oninput = atualizarBotaoSubmit;
-        elBusca.oninput = renderLista;
+        
+        elEmail.oninput = atualizarBotao;
 
         elForm.onsubmit = async (e) => {
             e.preventDefault();
             elBtn.disabled = true;
-            elBtnLabel.textContent = 'ENVIANDO...';
-            
-            const op = opcoesCombo[elCombo.value];
-            const json = await chamarGoogle({ 
-                action: 'saveAttendance', 
-                data: document.getElementById('data').value, 
-                aldeia: op.aldeia, 
-                sociedade: op.sociedade, 
-                nome: nomeSelecionado, 
-                email: elEmail.value 
-            });
+            document.getElementById('btn-label').textContent = 'ENVIANDO...';
 
-            if (json.ok) {
-                document.querySelector('.page-wrap .w-full').innerHTML = `
-                    <div class="card-glass p-8 text-center rounded-2xl border border-emerald-500/50">
-                        <h2 class="text-white uppercase font-serif tracking-widest">Presença Confirmada</h2>
-                        <p class="mt-4 text-xs text-gray-400 uppercase tracking-tighter text-emerald-400">Não por nós, mas pela Glória do Seu Nome.</p>
-                    </div>`;
-            } else {
-                alert(json.error);
+            try {
+                const res = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'cors',
+                    body: JSON.stringify({
+                        action: 'saveAttendance',
+                        data: elDataInput.value,
+                        nome: nomeSelecionado,
+                        email: elEmail.value
+                    })
+                });
+                const json = await res.json();
+                
+                if (json.ok) {
+                    document.querySelector('.page-wrap .w-full').innerHTML = `
+                        <div class="card-glass p-8 text-center rounded-2xl border border-white/10">
+                            <h2 class="text-gold uppercase font-serif tracking-widest text-xl">Presença Confirmada</h2>
+                            <p class="mt-4 text-[10px] text-gray-400 uppercase tracking-[0.2em]">Não por nós, mas pela Glória do Seu Nome.</p>
+                        </div>`;
+                } else {
+                    alert(json.error);
+                    elBtn.disabled = false;
+                    document.getElementById('btn-label').textContent = 'CONFIRMAR PRESENÇA';
+                }
+            } catch (err) {
+                alert("Erro de conexão. Tente novamente.");
                 elBtn.disabled = false;
-                elBtnLabel.textContent = 'CONFIRMAR PRESENÇA';
             }
         };
 
-        // CARGA INICIAL
-        const jsonInit = await chamarGoogle({ action: 'getOptions' });
-        if (jsonInit.ok) {
-            document.getElementById('data').value = jsonInit.data.dataPadrao;
-            document.getElementById('data-display').textContent = jsonInit.data.dataPadrao;
-            elCombo.innerHTML = '<option value="">SELECIONE A SOCIEDADE</option>';
-            let i = 0;
-            for (let aldeia in jsonInit.data.aldeias) {
-                jsonInit.data.aldeias[aldeia].forEach(soc => {
-                    opcoesCombo.push({ aldeia, sociedade: soc });
-                    elCombo.add(new Option(`${aldeia} - ${soc}`, i++));
-                });
+        // Carregar dados iniciais
+        try {
+            const res = await fetch(SCRIPT_URL, { 
+                method: 'POST', 
+                body: JSON.stringify({ action: 'getOptions' }) 
+            });
+            const json = await res.json();
+            if (json.ok) {
+                elDataInput.value = json.data.dataPadrao;
+                elDataDisplay.textContent = json.data.dataPadrao;
+                membrosGerais = json.data.membros;
+                renderLista();
             }
+        } catch (err) {
+            elDataDisplay.textContent = "ERRO AO CARREGAR";
         }
     };
     window.addEventListener('load', init);

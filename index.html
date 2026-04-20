@@ -64,47 +64,27 @@
                     </div>
                 </div>
 
-                <div class="card-glass rounded-2xl border border-white/10 p-4 shadow-card sm:p-5">
-                    <div class="flex gap-4">
-                        <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-amber-600/40 bg-black/40 text-gold">
-                            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                                <path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1h-5v-6H9v6H4a1 1 0 01-1-1V9.5z" />
-                            </svg>
-                        </div>
-                        <div class="min-w-0 flex-1">
-                            <label for="combo-aldeia-sociedade" class="font-sans text-[10px] font-bold uppercase tracking-widest text-gold">Aldeia e Sociedade</label>
-                            <div class="relative mt-2">
-                                <select id="combo-aldeia-sociedade" class="w-full cursor-pointer appearance-none rounded-xl border border-amber-600/50 bg-black/50 py-3 pl-3 pr-10 text-sm text-white focus:border-gold outline-none">
-                                    <option value="">Selecione a sociedade</option>
-                                </select>
-                                <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-gold/80">
-                                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="card-membros" class="card-glass hidden rounded-2xl border border-white/10 p-4 shadow-card sm:p-5 transition-all duration-300">
+                <div id="card-membros" class="card-glass rounded-2xl border border-white/10 p-4 shadow-card sm:p-5 transition-all duration-300">
                     <div class="flex gap-4 mb-4">
                         <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-amber-600/40 bg-black/40 text-gold">
                             <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                                <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" />
+                                <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" /><circle cx="9" cy="7" r="4" />
                             </svg>
                         </div>
                         <div class="flex-1">
                             <div class="flex items-center justify-between">
                                 <div class="flex items-center gap-2">
-                                    <span class="font-sans text-[10px] font-bold text-gold uppercase tracking-widest">Selecione seu Nome</span>
-                                    <span id="badge-membros" class="rounded-full bg-emerald-600/90 px-2 py-0.5 text-[10px] font-semibold text-white">0</span>
+                                    <span class="font-sans text-[10px] font-bold text-gold uppercase tracking-widest">Identifique-se</span>
                                 </div>
                             </div>
-                            <input type="search" id="busca-membro" class="mt-2 w-full rounded-xl border border-white/10 bg-black/45 py-2 px-3 text-sm text-white placeholder:text-gray-500 outline-none" placeholder="BUSCAR NA LISTA..." />
+                            <input type="search" id="busca-membro" class="mt-2 w-full rounded-xl border border-white/10 bg-black/45 py-3 px-3 text-sm text-white placeholder:text-gray-500 outline-none focus:border-gold/50" placeholder="DIGITE SEU NOME..." autocomplete="off" />
                         </div>
                     </div>
+                    
                     <div id="lista-membros-wrap" class="max-h-60 overflow-y-auto rounded-xl border border-white/5 bg-black/30">
-                        <ul id="lista-membros" class="divide-y divide-white/5"></ul>
-                        <p id="lista-membros-vazia" class="hidden px-4 py-6 text-center text-sm text-gray-500 uppercase">Membro não encontrado.</p>
+                        <ul id="lista-membros" class="divide-y divide-white/5">
+                            <p class="p-4 text-center text-[10px] text-gray-500 uppercase tracking-widest">Aguardando busca...</p>
+                        </ul>
                     </div>
                 </div>
 

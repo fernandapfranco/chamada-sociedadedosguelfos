@@ -1,4 +1,5 @@
 (function () {
+    // URL da sua Implantação de TESTE (Certifique-se de que é a mais recente)
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbykQ-aZXOz4w_02k2h4YjQnGefsVcPctKXJbeFl1IUiKCJQ-IoB3hbNQc4x4_4L27Te/exec"; 
     var membrosGerais = [];
     var nomeSelecionado = '';
@@ -12,40 +13,46 @@
         const elDataDisplay = document.getElementById('data-display');
         const elDataInput = document.getElementById('data');
 
-function renderLista() {
-    const q = elBusca.value.trim().toLowerCase();
-    elLista.innerHTML = ''; // Limpa a lista sempre
-    
-    // SÓ EXIBE SE TIVER PELO MENOS 1 CARACTERE DIGITADO
-    if (q.length > 0) {
-        const filtrados = membrosGerais.filter(n => n.toLowerCase().includes(q));
-        
-        if (filtrados.length > 0) {
-            // Mostramos todos os nomes que batem com a busca, sem limite de 10
-            filtrados.forEach(nome => {
-                const isSel = nome === nomeSelecionado;
-                const li = document.createElement('li');
-                li.className = `px-4 py-3 cursor-pointer border-b border-white/5 transition-all text-xs tracking-widest uppercase ${isSel ? 'bg-gold/20 text-gold font-bold' : 'text-white/70 hover:bg-white/10'}`;
-                li.textContent = nome;
-                li.onclick = () => { 
-                    nomeSelecionado = nome;
-                    elBusca.value = nome.toUpperCase();
-                    elLista.innerHTML = ''; // Esconde a lista após selecionar
-                    atualizarBotao(); 
-                };
-                elLista.appendChild(li);
-            });
-        } else {
-            elLista.innerHTML = '<p class="p-4 text-center text-[10px] text-gray-500 uppercase">Guerreiro não localizado.</p>';
+        function renderLista() {
+            const q = elBusca.value.trim().toLowerCase();
+            elLista.innerHTML = ''; // Limpa a lista sempre
+            
+            // BUSCA ATIVA: Só exibe resultados se o usuário digitar algo
+            if (q.length > 0) {
+                const filtrados = membrosGerais.filter(n => n.toLowerCase().includes(q));
+                
+                if (filtrados.length > 0) {
+                    // Mostramos todos os nomes que batem com a busca
+                    filtrados.forEach(nome => {
+                        const isSel = nome === nomeSelecionado;
+                        const li = document.createElement('li');
+                        li.className = `px-4 py-3 cursor-pointer border-b border-white/5 transition-all text-xs tracking-widest uppercase ${isSel ? 'bg-gold/20 text-gold font-bold' : 'text-white/70 hover:bg-white/10'}`;
+                        li.textContent = nome;
+                        li.onclick = () => { 
+                            nomeSelecionado = nome;
+                            elBusca.value = nome.toUpperCase();
+                            elLista.innerHTML = ''; // Esconde a lista após selecionar
+                            atualizarBotao(); 
+                        };
+                        elLista.appendChild(li);
+                    });
+                } else {
+                    elLista.innerHTML = '<p class="p-4 text-center text-[10px] text-gray-500 uppercase tracking-widest">Guerreiro não localizado.</p>';
+                }
+            }
         }
-    }
-}
 
         function atualizarBotao() {
+            // Habilita o botão apenas se houver nome selecionado e um e-mail válido
             elBtn.disabled = !(nomeSelecionado && elEmail.value.includes('@'));
         }
 
-        elBusca.oninput = () => { nomeSelecionado = ''; renderLista(); atualizarBotao(); };
+        elBusca.oninput = () => { 
+            nomeSelecionado = ''; // Reseta seleção se o usuário voltar a digitar
+            renderLista(); 
+            atualizarBotao(); 
+        };
+        
         elEmail.oninput = atualizarBotao;
 
         elForm.onsubmit = async (e) => {
@@ -59,7 +66,7 @@ function renderLista() {
                     mode: 'cors',
                     body: JSON.stringify({
                         action: 'saveAttendance',
-                        data: elDataInput.value,
+                        data: elDataInput.value, // Envia o formato dd/mm/aaaa salvo no input hidden
                         nome: nomeSelecionado,
                         email: elEmail.value
                     })
@@ -79,10 +86,11 @@ function renderLista() {
             } catch (err) {
                 alert("Erro ao enviar. Tente novamente.");
                 elBtn.disabled = false;
+                document.getElementById('btn-label').textContent = 'CONFIRMAR PRESENÇA';
             }
         };
 
-        // CARGA INICIAL (AQUI ESTAVA O ERRO)
+        // CARGA INICIAL
         try {
             const res = await fetch(SCRIPT_URL, { 
                 method: 'POST', 
@@ -90,10 +98,16 @@ function renderLista() {
             });
             const json = await res.json();
             if (json.ok) {
-                elDataInput.value = json.data.dataPadrao;
-                elDataDisplay.textContent = json.data.dataPadrao;
+                // Exibe a data solene (domingo, 26 de abril...)
+                elDataDisplay.textContent = json.data.dataParaMostrar;
+                
+                // Armazena o valor dd/mm/aaaa no input hidden para gravação correta na planilha
+                elDataInput.value = json.data.dataParaGravar;
+                
                 membrosGerais = json.data.membros;
-                renderLista(); // Isso trará os 10 primeiros nomes já na abertura
+                
+                // Não chama renderLista aqui para manter a tela limpa na abertura
+                elLista.innerHTML = ''; 
             }
         } catch (err) {
             elDataDisplay.textContent = "ERRO DE CONEXÃO";

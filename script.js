@@ -1,6 +1,6 @@
 (function () {
     // URL da sua Implantação de TESTE (Certifique-se de que é a mais recente)
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbykQ-aZXOz4w_02k2h4YjQnGefsVcPctKXJbeFl1IUiKCJQ-IoB3hbNQc4x4_4L27Te/exec"; 
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzk6igXpEtZQMTvGabrDAo2WqzVba6KJ8x4B2IKrz7cbCsY_AsD84Qhz4bCnSsIOt8h/exec"; 
     var membrosGerais = [];
     var nomeSelecionado = '';
 

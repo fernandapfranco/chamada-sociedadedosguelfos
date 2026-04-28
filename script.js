@@ -1,6 +1,6 @@
 (function () {
     // CERTIFIQUE-SE DE USAR A URL DA "NOVA IMPLANTAÇÃO" DE PRODUÇÃO
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyq7jlNOPMLJN1UQerDcecEywmQvXO9KtJiG4P1uMTk3gZM6PkbC21Ibb7Kxkn7rKVw/exec"; 
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxWh8-TbbbwmW2RaVhvqzY7EwHhYBC-Gvo1FA3cqqHqcS0ksvu9Hy1iakpqzIPj5orQ/exec"; 
 
     var membrosGerais = [];
     var nomeSelecionado = '';
@@ -16,21 +16,27 @@
         const elBtnLabel = document.getElementById('btn-label');
         const elWrap = document.getElementById('lista-membros-wrap');
 
-        // FUNÇÃO DE CHAMADA CENTRALIZADA PARA EVITAR ERROS DE CORS
+        // FUNÇÃO DE CHAMADA CENTRALIZADA - AJUSTADA PARA EVITAR ERRO DE CORS EM PRODUÇÃO
         async function chamarGoogle(payload) {
             try {
+                // Usamos o redirecionamento 'follow' e Content-Type 'text/plain' 
+                // para que o Google Script aceite a requisição de domínios diferentes (Vercel)
                 const response = await fetch(SCRIPT_URL, {
                     method: 'POST',
                     mode: 'cors',
+                    redirect: 'follow', 
                     headers: {
                         'Content-Type': 'text/plain;charset=utf-8'
                     },
                     body: JSON.stringify(payload)
                 });
-                return await response.json();
+                
+                // Em produção, o Google pode retornar o JSON dentro de um fluxo de texto
+                const texto = await response.text();
+                return JSON.parse(texto);
             } catch (e) {
                 console.error("Erro na requisição:", e);
-                return { ok: false, error: "Erro de conexão com o servidor." };
+                return { ok: false, error: "Falha na conexão com os anais da Sociedade." };
             }
         }
 
@@ -38,19 +44,15 @@
             const q = elBusca.value.trim().toLowerCase();
             elLista.innerHTML = ''; 
             
-            // BUSCA ATIVA: Se o campo estiver vazio, esconde o card da lista e encerra
             if (q.length === 0) {
                 elWrap.classList.add('hidden');
                 return;
             }
 
-            // Mostra o contêiner apenas quando há algo digitado
             elWrap.classList.remove('hidden');
-
             const filtrados = membrosGerais.filter(n => n.toLowerCase().includes(q));
             
             if (filtrados.length > 0) {
-                // Limitamos a 15 nomes para performance no mobile
                 filtrados.slice(0, 15).forEach(nome => {
                     const isSel = nome === nomeSelecionado;
                     const li = document.createElement('li');
@@ -59,7 +61,7 @@
                     li.onclick = () => { 
                         nomeSelecionado = nome;
                         elBusca.value = nome.toUpperCase();
-                        elWrap.classList.add('hidden'); // Esconde a lista após seleção
+                        elWrap.classList.add('hidden'); 
                         atualizarBotao(); 
                     };
                     elLista.appendChild(li);
@@ -120,8 +122,6 @@
             elDataDisplay.textContent = jsonInit.data.dataParaMostrar;
             elDataInput.value = jsonInit.data.dataParaGravar;
             membrosGerais = jsonInit.data.membros;
-            
-            // Garante que a lista comece limpa e escondida
             elLista.innerHTML = ''; 
             elWrap.classList.add('hidden');
         } else {

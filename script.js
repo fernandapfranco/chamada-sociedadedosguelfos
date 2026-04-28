@@ -83,7 +83,7 @@
                             </div>
                             <h2 class="text-gold uppercase font-serif tracking-widest text-xl font-bold">Presença Confirmada</h2>
                             <p class="mt-4 text-[11px] text-gray-400 uppercase tracking-[0.2em] leading-relaxed">
-                                Sua assinatura foi registrada nos anais da Sociedade.<br>Confira seu e-mail em breve.
+                                Não por nós, mas pela Glória do Seu Nome.
                             </p>
                         </div>`;
                 } else {

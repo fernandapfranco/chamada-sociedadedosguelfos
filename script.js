@@ -59,16 +59,19 @@
             elBtnLabel.textContent = 'ENVIANDO...';
 
             try {
-                const res = await fetch(SCRIPT_URL, {
-                    method: 'POST',
-                    mode: 'cors',
-                    body: JSON.stringify({
-                        action: 'saveAttendance',
-                        data: elDataInput.value,
-                        nome: nomeSelecionado,
-                        email: elEmail.value
-                    })
-                });
+               const res = await fetch(SCRIPT_URL, {
+    method: 'POST',
+    mode: 'cors',
+    headers: {
+        'Content-Type': 'text/plain;charset=utf-8', // O Google Apps Script prefere assim para evitar erros de pré-vôo (CORS)
+    },
+    body: JSON.stringify({
+        action: 'saveAttendance',
+        data: elDataInput.value,
+        nome: nomeSelecionado,
+        email: elEmail.value
+    })
+});
 
                 const json = await res.json();
 

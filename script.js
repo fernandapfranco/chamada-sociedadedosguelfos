@@ -55,40 +55,29 @@
         
         elEmail.oninput = atualizarBotao;
 
-        elForm.onsubmit = async (e) => {
-            e.preventDefault();
-            elBtn.disabled = true;
-            document.getElementById('btn-label').textContent = 'ENVIANDO...';
+elForm.onsubmit = async (e) => {
+    e.preventDefault();
+    elBtn.disabled = true;
+    document.getElementById('btn-label').textContent = 'ENVIANDO...';
 
-            try {
-                const res = await fetch(SCRIPT_URL, {
-                    method: 'POST',
-                    mode: 'cors',
-                    body: JSON.stringify({
-                        action: 'saveAttendance',
-                        data: elDataInput.value, // Envia o formato dd/mm/aaaa salvo no input hidden
-                        nome: nomeSelecionado,
-                        email: elEmail.value
-                    })
-                });
-                const json = await res.json();
-                if (json.ok) {
-                    document.querySelector('.page-wrap .w-full').innerHTML = `
-                        <div class="card-glass p-8 text-center rounded-2xl border border-white/10 shadow-card">
-                            <h2 class="text-gold uppercase font-serif tracking-widest text-xl">Presença Confirmada</h2>
-                            <p class="mt-4 text-[10px] text-gray-400 uppercase tracking-[0.2em]">Não por nós, mas pela Glória do Seu Nome.</p>
-                        </div>`;
-                } else {
-                    alert(json.error);
-                    elBtn.disabled = false;
-                    document.getElementById('btn-label').textContent = 'CONFIRMAR PRESENÇA';
-                }
-            } catch (err) {
-                alert("Erro ao enviar. Tente novamente.");
-                elBtn.disabled = false;
-                document.getElementById('btn-label').textContent = 'CONFIRMAR PRESENÇA';
-            }
-        };
+    try {
+        const res = await fetch(SCRIPT_URL, {
+            method: 'POST',
+            mode: 'cors',
+            body: JSON.stringify({
+                action: 'saveAttendance',
+                data: elDataInput.value, // dd/mm/aaaa
+                nome: nomeSelecionado,    // Nome escolhido na lista
+                email: elEmail.value      // E-mail digitado pelo usuário
+            })
+        });
+        const json = await res.json();
+        // ... restante da lógica de sucesso ...
+    } catch (err) {
+        alert("Erro na conexão. Tente novamente.");
+        elBtn.disabled = false;
+    }
+};
 
         // CARGA INICIAL
         try {

@@ -1,6 +1,6 @@
 (function () {
     // CERTIFIQUE-SE DE USAR A URL DA "NOVA IMPLANTAÇÃO" DE PRODUÇÃO
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx7jlNOPMLJN1UQerDcecEywmQvXO9KtJiG4P1uMTk3gZM6PkbC21Ibb7Kxkn7rKVw/exec"; 
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyq7jlNOPMLJN1UQerDcecEywmQvXO9KtJiG4P1uMTk3gZM6PkbC21Ibb7Kxkn7rKVw/exec"; 
 
     var membrosGerais = [];
     var nomeSelecionado = '';
@@ -14,6 +14,7 @@
         const elDataDisplay = document.getElementById('data-display');
         const elDataInput = document.getElementById('data');
         const elBtnLabel = document.getElementById('btn-label');
+        const elWrap = document.getElementById('lista-membros-wrap');
 
         // FUNÇÃO DE CHAMADA CENTRALIZADA PARA EVITAR ERROS DE CORS
         async function chamarGoogle(payload) {
@@ -37,33 +38,38 @@
             const q = elBusca.value.trim().toLowerCase();
             elLista.innerHTML = ''; 
             
-            // Só exibe a lista se houver algo digitado
-            if (q.length > 0) {
-                const filtrados = membrosGerais.filter(n => n.toLowerCase().includes(q));
-                
-                if (filtrados.length > 0) {
-                    // Limitamos a 15 nomes para performance no mobile
-                    filtrados.slice(0, 15).forEach(nome => {
-                        const isSel = nome === nomeSelecionado;
-                        const li = document.createElement('li');
-                        li.className = `px-4 py-3 cursor-pointer border-b border-white/5 transition-all text-xs tracking-widest uppercase ${isSel ? 'bg-gold/20 text-gold font-bold' : 'text-white/70 hover:bg-white/10'}`;
-                        li.textContent = nome;
-                        li.onclick = () => { 
-                            nomeSelecionado = nome;
-                            elBusca.value = nome.toUpperCase();
-                            elLista.innerHTML = ''; // Esconde a lista após seleção
-                            atualizarBotao(); 
-                        };
-                        elLista.appendChild(li);
-                    });
-                } else {
-                    elLista.innerHTML = '<p class="p-4 text-center text-[10px] text-gray-500 uppercase tracking-widest">Guerreiro não localizado.</p>';
-                }
+            // BUSCA ATIVA: Se o campo estiver vazio, esconde o card da lista e encerra
+            if (q.length === 0) {
+                elWrap.classList.add('hidden');
+                return;
+            }
+
+            // Mostra o contêiner apenas quando há algo digitado
+            elWrap.classList.remove('hidden');
+
+            const filtrados = membrosGerais.filter(n => n.toLowerCase().includes(q));
+            
+            if (filtrados.length > 0) {
+                // Limitamos a 15 nomes para performance no mobile
+                filtrados.slice(0, 15).forEach(nome => {
+                    const isSel = nome === nomeSelecionado;
+                    const li = document.createElement('li');
+                    li.className = `px-4 py-3 cursor-pointer border-b border-white/5 transition-all text-xs tracking-widest uppercase ${isSel ? 'bg-gold/20 text-gold font-bold' : 'text-white/70 hover:bg-white/10'}`;
+                    li.textContent = nome;
+                    li.onclick = () => { 
+                        nomeSelecionado = nome;
+                        elBusca.value = nome.toUpperCase();
+                        elWrap.classList.add('hidden'); // Esconde a lista após seleção
+                        atualizarBotao(); 
+                    };
+                    elLista.appendChild(li);
+                });
+            } else {
+                elLista.innerHTML = '<p class="p-4 text-center text-[10px] text-gray-500 uppercase tracking-widest">Guerreiro não localizado.</p>';
             }
         }
 
         function atualizarBotao() {
-            // Habilita se tiver nome selecionado e e-mail com @
             const emailValido = elEmail.value.includes('@');
             elBtn.disabled = !(nomeSelecionado && emailValido);
         }
@@ -89,7 +95,6 @@
             });
 
             if (json.ok) {
-                // Mensagem de Sucesso (Substitui o formulário)
                 document.querySelector('.page-wrap .w-full').innerHTML = `
                     <div class="card-glass p-8 text-center rounded-2xl border border-white/10 shadow-card animate-in fade-in zoom-in duration-300">
                         <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gold/10 text-gold">
@@ -112,13 +117,13 @@
         // CARGA INICIAL
         const jsonInit = await chamarGoogle({ action: 'getOptions' });
         if (jsonInit.ok) {
-            // Seta as datas (Display e Input Hidden)
             elDataDisplay.textContent = jsonInit.data.dataParaMostrar;
             elDataInput.value = jsonInit.data.dataParaGravar;
-            
-            // Carrega a lista de membros na memória
             membrosGerais = jsonInit.data.membros;
+            
+            // Garante que a lista comece limpa e escondida
             elLista.innerHTML = ''; 
+            elWrap.classList.add('hidden');
         } else {
             elDataDisplay.textContent = "ERRO DE CONEXÃO";
         }

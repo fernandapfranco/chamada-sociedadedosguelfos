@@ -16,27 +16,33 @@
         const elBtnLabel = document.getElementById('btn-label');
         const elWrap = document.getElementById('lista-membros-wrap');
 
-        // FUNÇÃO DE CHAMADA CENTRALIZADA - AJUSTADA PARA EVITAR ERRO DE CORS EM PRODUÇÃO
+        // FUNÇÃO DE CHAMADA RESISTENTE A ERROS DE CORS
         async function chamarGoogle(payload) {
             try {
-                // Usamos o redirecionamento 'follow' e Content-Type 'text/plain' 
-                // para que o Google Script aceite a requisição de domínios diferentes (Vercel)
                 const response = await fetch(SCRIPT_URL, {
                     method: 'POST',
-                    mode: 'cors',
-                    redirect: 'follow', 
                     headers: {
                         'Content-Type': 'text/plain;charset=utf-8'
                     },
                     body: JSON.stringify(payload)
                 });
                 
-                // Em produção, o Google pode retornar o JSON dentro de um fluxo de texto
                 const texto = await response.text();
                 return JSON.parse(texto);
             } catch (e) {
-                console.error("Erro na requisição:", e);
-                return { ok: false, error: "Falha na conexão com os anais da Sociedade." };
+                console.warn("Tentando segunda via de conexão...", e);
+                try {
+                    // Fallback sem cabeçalho customizado para evitar preflight OPTIONS
+                    const res2 = await fetch(SCRIPT_URL + "?action=" + payload.action, {
+                        method: 'POST',
+                        body: JSON.stringify(payload)
+                    });
+                    const txt2 = await res2.text();
+                    return JSON.parse(txt2);
+                } catch (err2) {
+                    console.error("Erro fatal de conexão:", err2);
+                    return { ok: false, error: "Falha na conexão com os anais da Sociedade." };
+                }
             }
         }
 
@@ -121,7 +127,7 @@
         if (jsonInit.ok) {
             elDataDisplay.textContent = jsonInit.data.dataParaMostrar;
             elDataInput.value = jsonInit.data.dataParaGravar;
-            membrosGerais = jsonInit.data.membros;
+            membrosGerais = jsonInit.data.membros || [];
             elLista.innerHTML = ''; 
             elWrap.classList.add('hidden');
         } else {

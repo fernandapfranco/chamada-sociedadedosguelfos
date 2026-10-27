@@ -41,7 +41,7 @@
                     return JSON.parse(txt2);
                 } catch (err2) {
                     console.error("Erro fatal de conexão:", err2);
-                    return { ok: false, error: "Falha na conexão com os anais da Sociedade." };
+                    return { ok: false, error: "Falha na conexão com os canais da Sociedade dos Guelfos." };
                 }
             }
         }
